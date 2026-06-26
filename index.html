@@ -2,720 +2,700 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ateliê Malu Serra — Financeiro</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
 :root {
-  --rust: #B5522A;
-  --terracota: #C96A3A;
-  --olive: #6B7C3A;
-  --olive-light: #eef3e6;
-  --cream: #F5EFE4;
-  --warm-white: #FAF6F0;
-  --dark: #2C2218;
-  --medium: #6B5B4E;
-  --light: #D4C4B0;
-  --light2: #E8DDD0;
-  --green: #2e7d32;
-  --green-light: #e8f5e9;
-  --red: #c62828;
-  --red-light: #ffebee;
-  --blue: #1565c0;
-  --blue-light: #e3f2fd;
+  --terracota:#C4663A; --terracota-l:#F0D0C0;
+  --argila:#D4A882; --creme:#F5EDE3; --fundo:#FAF6F1;
+  --escuro:#2C1A0E; --medio:#7A5C44; --borda:#E8D8C8;
+  --verde:#4A7A3A; --verde-l:#E4F0E0;
+  --vermelho:#A63020; --vermelho-l:#F5E4E1;
+  --azul:#3A5A8A; --azul-l:#E0E8F5;
+  --roxo:#6A4A8A; --roxo-l:#EDE4F5;
+  --dourado:#8A7A2A; --dourado-l:#F5F0D0;
+  --card:#fff;
 }
-* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-body { font-family: 'DM Sans', sans-serif; background: var(--warm-white); color: var(--dark); min-height: 100vh; }
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--fundo);color:var(--escuro);font-family:'DM Sans',sans-serif;font-weight:300;min-height:100vh;}
 
-header {
-  background: var(--dark); padding: 18px 20px 14px;
-  display: flex; align-items: baseline; gap: 10px;
-  position: sticky; top: 0; z-index: 100;
-}
-header h1 { font-family: 'Playfair Display', serif; font-size: 1.25rem; color: var(--cream); }
-header span { font-family: 'Playfair Display', serif; font-style: italic; color: var(--terracota); font-size: 0.85rem; }
+/* HEADER */
+header{background:var(--escuro);padding:18px 20px 0;position:sticky;top:0;z-index:200;}
+header h1{font-family:'Playfair Display',serif;font-size:19px;color:var(--creme);}
+header p{font-size:10px;color:var(--argila);letter-spacing:.1em;text-transform:uppercase;padding-bottom:12px;}
+.month-tabs{display:flex;overflow-x:auto;background:var(--escuro);padding:0 16px 14px;gap:8px;scrollbar-width:none;}
+.month-tabs::-webkit-scrollbar{display:none;}
+.mtab{flex-shrink:0;padding:6px 16px;border-radius:20px;border:1px solid rgba(255,255,255,.15);background:transparent;color:var(--argila);font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;transition:all .2s;}
+.mtab.active{background:var(--terracota);border-color:var(--terracota);color:#fff;font-weight:500;}
 
-/* MES BAR */
-.mes-bar {
-  background: var(--rust); display: flex; align-items: center;
-  justify-content: space-between; padding: 9px 16px;
-}
-.mes-label { color: #fff; font-size: 0.85rem; font-weight: 500; letter-spacing: 0.04em; }
-.mes-arr {
-  background: rgba(255,255,255,0.15); border: none; color: #fff;
-  width: 30px; height: 30px; border-radius: 50%; font-size: 1rem;
-  cursor: pointer; display: flex; align-items: center; justify-content: center;
-}
-.mes-arr:active { background: rgba(255,255,255,0.3); }
+/* NAV TABS */
+.nav-tabs{display:flex;background:#fff;border-bottom:1px solid var(--borda);position:sticky;top:72px;z-index:100;}
+.ntab{flex:1;padding:12px 4px 10px;text-align:center;font-size:11px;color:var(--medio);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;letter-spacing:.03em;}
+.ntab.active{color:var(--terracota);border-bottom-color:var(--terracota);font-weight:500;}
 
-/* TABS */
-.tabs {
-  display: flex; background: var(--dark); padding: 0 8px 8px; gap: 2px; overflow-x: auto;
-  scrollbar-width: none;
-}
-.tabs::-webkit-scrollbar { display: none; }
-.tab {
-  background: transparent; border: 1.5px solid rgba(255,255,255,0.2);
-  color: rgba(255,255,255,0.6); font-family: 'DM Sans', sans-serif;
-  font-size: 0.72rem; font-weight: 500; letter-spacing: 0.06em;
-  text-transform: uppercase; padding: 5px 14px; border-radius: 20px;
-  cursor: pointer; white-space: nowrap; flex-shrink: 0;
-}
-.tab.active { background: var(--terracota); border-color: var(--terracota); color: #fff; }
+main{padding:16px 14px 100px;max-width:480px;margin:0 auto;}
 
-/* CONTENT */
-.content { padding: 16px 14px 100px; max-width: 600px; margin: 0 auto; }
-.tab-panel { display: none; }
-.tab-panel.active { display: block; }
+/* BLOCO NUMERADO */
+.bloco{background:var(--card);border-radius:16px;border:1px solid var(--borda);margin-bottom:12px;overflow:hidden;}
+.bloco-header{display:flex;align-items:center;gap:10px;padding:14px 16px 12px;border-bottom:1px solid var(--borda);}
+.bloco-num{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;flex-shrink:0;color:#fff;}
+.bloco-titulo{font-family:'Playfair Display',serif;font-size:15px;font-weight:400;flex:1;}
+.bloco-total{font-family:'Playfair Display',serif;font-size:16px;font-weight:600;}
 
-/* BLOCOS */
-.bloco {
-  background: #fff; border-radius: 14px; margin-bottom: 14px;
-  box-shadow: 0 1px 4px rgba(44,34,24,0.08); overflow: hidden;
-}
-.bloco-header {
-  display: flex; align-items: center; gap: 10px;
-  padding: 12px 14px; border-bottom: 1px solid var(--light2);
-}
-.bloco-num {
-  width: 26px; height: 26px; border-radius: 50%;
-  background: var(--dark); color: var(--cream);
-  font-size: 0.75rem; font-weight: 600;
-  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-}
-.bloco-title { font-size: 0.88rem; font-weight: 500; flex: 1; }
-.bloco-total { font-size: 0.85rem; font-weight: 600; color: var(--olive); }
-.bloco-body { padding: 12px 14px; }
+/* RECEITA BRUTA — input único grande */
+.receita-bruta-wrap{padding:20px 16px;}
+.rb-label{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--medio);margin-bottom:8px;}
+.rb-input{width:100%;padding:14px 16px;border:2px solid var(--borda);border-radius:12px;font-family:'Playfair Display',serif;font-size:24px;color:var(--verde);background:var(--fundo);outline:none;text-align:right;}
+.rb-input:focus{border-color:var(--verde);background:#fff;}
 
-/* RECEITA BRUTA */
-.receita-input-wrap { display: flex; align-items: center; gap: 10px; }
-.receita-prefix { font-size: 0.9rem; color: var(--medium); font-weight: 500; }
-.receita-input {
-  flex: 1; border: 1.5px solid var(--light); border-radius: 10px;
-  padding: 10px 12px; font-family: 'DM Sans', sans-serif; font-size: 1.1rem;
-  font-weight: 600; color: var(--green); background: var(--green-light);
-  outline: none; text-align: right;
-}
-.receita-input:focus { border-color: var(--olive); }
+/* LINHA ITEM */
+.item-row{display:flex;align-items:center;padding:9px 16px;border-bottom:1px solid var(--fundo);gap:8px;}
+.item-row:last-child{border-bottom:none;}
+.item-nome{flex:1;font-size:13px;color:var(--escuro);min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.item-nome.vazio{color:var(--borda);font-style:italic;}
+.idata{width:72px;padding:6px 7px;border:1.5px solid var(--borda);border-radius:8px;font-size:11px;color:var(--medio);background:var(--fundo);outline:none;flex-shrink:0;}
+.idata:focus{border-color:var(--terracota);}
+.ival{width:100px;padding:7px 10px;border:1.5px solid var(--borda);border-radius:8px;font-size:13px;color:var(--escuro);background:var(--fundo);text-align:right;outline:none;flex-shrink:0;}
+.ival:focus{border-color:var(--terracota);background:#fff;}
+.ival.ok{border-color:var(--borda);background:#fff;font-weight:500;}
 
-/* RECEITA LIQUIDA */
-.liquida-display {
-  background: var(--green-light); border-radius: 10px; padding: 12px 14px;
-  display: flex; justify-content: space-between; align-items: center;
-}
-.liquida-label { font-size: 0.82rem; color: var(--medium); }
-.liquida-valor { font-size: 1.2rem; font-weight: 700; color: var(--green); }
-.liquida-display.negativo { background: var(--red-light); }
-.liquida-display.negativo .liquida-valor { color: var(--red); }
+/* RODAPÉ TOTAL */
+.bloco-footer{display:flex;justify-content:space-between;align-items:center;padding:11px 16px;background:var(--fundo);border-top:1.5px solid var(--borda);}
+.bloco-footer-label{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--medio);}
+.bloco-footer-val{font-family:'Playfair Display',serif;font-size:17px;font-weight:600;}
 
-/* ITEM ROWS */
-.item-row {
-  display: grid; grid-template-columns: 1fr auto auto;
-  gap: 7px; align-items: center; padding: 7px 0;
-  border-bottom: 1px solid var(--light2);
-}
-.item-row:last-child { border-bottom: none; }
-.item-nome { font-size: 0.82rem; color: var(--dark); }
-.idata {
-  border: 1px solid var(--light); border-radius: 7px;
-  padding: 5px 7px; font-size: 0.72rem; color: var(--medium);
-  background: var(--warm-white); outline: none; width: 110px;
-}
-.ival {
-  border: 1px solid var(--light); border-radius: 7px;
-  padding: 5px 8px; font-size: 0.82rem; color: var(--dark);
-  background: var(--warm-white); outline: none; width: 90px; text-align: right;
-}
-.ival.ok { border-color: var(--olive); background: var(--olive-light); color: var(--olive); font-weight: 500; }
-.ival:focus { border-color: var(--terracota); }
-.idata:focus { border-color: var(--terracota); }
+/* RESULTADO LÍQUIDO */
+.resultado-bloco{border-radius:16px;padding:18px 20px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;}
+.resultado-bloco .rlabel{font-size:11px;text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px;}
+.resultado-bloco .rval{font-family:'Playfair Display',serif;font-size:26px;font-weight:600;}
 
-/* INVESTIMENTO */
-.invest-row { display: flex; align-items: center; gap: 10px; }
-.invest-input {
-  flex: 1; border: 1.5px solid var(--light); border-radius: 10px;
-  padding: 10px 12px; font-family: 'DM Sans', sans-serif; font-size: 1rem;
-  font-weight: 600; color: var(--blue); background: var(--blue-light);
-  outline: none; text-align: right;
-}
-.invest-input:focus { border-color: var(--blue); }
+/* DIRETÓRIO */
+.dir-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px;}
+.dir-card{background:var(--card);border-radius:12px;border:1px solid var(--borda);padding:14px 12px;cursor:pointer;transition:all .2s;text-align:center;}
+.dir-card:active{transform:scale(.97);}
+.dir-icon{font-size:22px;margin-bottom:6px;}
+.dir-nome{font-size:11px;color:var(--medio);line-height:1.3;}
 
-/* SALDO FINAL */
-.saldo-bar {
-  background: var(--dark); border-radius: 12px; padding: 14px 16px;
-  display: flex; justify-content: space-between; align-items: center;
-  margin-top: 4px;
-}
-.saldo-label { color: var(--light); font-size: 0.82rem; }
-.saldo-valor { font-size: 1.3rem; font-weight: 700; color: #fff; }
-.saldo-valor.positivo { color: #81c784; }
-.saldo-valor.negativo { color: #ef9a9a; }
+/* MODAL DIRETÓRIO */
+.modal-overlay{position:fixed;inset:0;background:rgba(44,26,14,.55);z-index:300;display:none;align-items:flex-end;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal-sheet{background:#fff;border-radius:24px 24px 0 0;padding:24px 18px 40px;width:100%;max-width:480px;max-height:85vh;overflow-y:auto;animation:slideUp .3s ease;}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-title{font-family:'Playfair Display',serif;font-size:18px;margin-bottom:18px;color:var(--escuro);}
+.modal-item-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--fundo);}
+.modal-item-row:last-child{border-bottom:none;}
+.modal-item-nome{flex:1;font-size:14px;color:var(--escuro);}
+.btn-del{width:28px;height:28px;border-radius:8px;border:none;background:var(--vermelho-l);color:var(--vermelho);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.add-item-row{display:flex;gap:8px;margin-top:14px;}
+.add-item-input{flex:1;padding:11px 13px;border:1.5px solid var(--borda);border-radius:10px;font-size:14px;outline:none;font-family:'DM Sans',sans-serif;}
+.add-item-input:focus{border-color:var(--terracota);}
+.btn-add-item{padding:11px 16px;border-radius:10px;border:none;background:var(--terracota);color:#fff;font-size:14px;cursor:pointer;white-space:nowrap;}
+.btn-close-modal{width:100%;padding:13px;border-radius:12px;border:none;background:var(--fundo);color:var(--medio);font-family:'DM Sans',sans-serif;font-size:14px;cursor:pointer;margin-top:16px;}
 
-/* RESUMO TABLE */
-.resumo-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
-.resumo-table th {
-  background: var(--dark); color: var(--cream); padding: 8px 10px;
-  text-align: left; font-weight: 500; font-size: 0.72rem;
-}
-.resumo-table td { padding: 8px 10px; border-bottom: 1px solid var(--light2); }
-.resumo-table tr:nth-child(even) td { background: var(--cream); }
-.resumo-table .val { text-align: right; font-weight: 500; }
-.resumo-table .positivo { color: var(--green); }
-.resumo-table .negativo { color: var(--red); }
+/* GRÁFICOS */
+.graficos-grid{display:grid;gap:12px;}
+.grafico-card{background:var(--card);border-radius:16px;border:1px solid var(--borda);padding:16px;}
+.grafico-titulo{font-family:'Playfair Display',serif;font-size:14px;color:var(--escuro);margin-bottom:12px;}
+.chart-wrap{position:relative;height:180px;}
 
-/* GRAFICOS */
-.chart-wrap {
-  background: #fff; border-radius: 14px; padding: 14px;
-  margin-bottom: 14px; box-shadow: 0 1px 4px rgba(44,34,24,0.08);
-}
-.chart-title { font-size: 0.82rem; font-weight: 500; color: var(--medium); margin-bottom: 10px; }
+/* SALVAR */
+.btn-salvar{width:100%;padding:14px;border-radius:12px;border:none;background:var(--terracota);color:#fff;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;cursor:pointer;margin-top:4px;letter-spacing:.02em;}
+.btn-salvar:active{opacity:.85;}
 
-/* DIRETORIOS */
-.dir-section { margin-bottom: 16px; }
-.dir-header {
-  background: var(--dark); color: var(--cream); border-radius: 10px 10px 0 0;
-  padding: 10px 14px; font-size: 0.82rem; font-weight: 500;
-  display: flex; justify-content: space-between; align-items: center;
-}
-.dir-body { background: #fff; border-radius: 0 0 10px 10px; padding: 10px 14px; box-shadow: 0 1px 4px rgba(44,34,24,0.08); }
-.dir-item {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 7px 0; border-bottom: 1px solid var(--light2); font-size: 0.82rem;
-}
-.dir-item:last-child { border-bottom: none; }
-.dir-remove {
-  background: none; border: none; color: var(--light); font-size: 1rem;
-  cursor: pointer; padding: 0 4px;
-}
-.dir-remove:active { color: var(--red); }
-.dir-add { display: flex; gap: 7px; margin-top: 10px; }
-.dir-input {
-  flex: 1; border: 1px solid var(--light); border-radius: 8px;
-  padding: 7px 10px; font-family: 'DM Sans', sans-serif; font-size: 0.82rem;
-  background: var(--warm-white); outline: none;
-}
-.dir-input:focus { border-color: var(--terracota); }
-.dir-btn {
-  background: var(--terracota); border: none; color: #fff;
-  border-radius: 8px; padding: 7px 14px; font-size: 0.82rem;
-  cursor: pointer; font-weight: 500;
-}
+.view{display:none;} .view.active{display:block;}
 
-/* BOTTOM */
-.bottom-bar {
-  position: fixed; bottom: 0; left: 0; right: 0;
-  background: var(--dark); padding: 10px 14px 24px; display: flex; gap: 8px;
-}
-.btn-save {
-  flex: 1; background: var(--olive); border: none; color: #fff;
-  font-family: 'DM Sans', sans-serif; font-size: 0.85rem; font-weight: 500;
-  padding: 11px; border-radius: 12px; cursor: pointer;
-}
-.btn-backup {
-  background: var(--medium); border: none; color: #fff;
-  font-family: 'DM Sans', sans-serif; font-size: 0.85rem; font-weight: 500;
-  padding: 11px 14px; border-radius: 12px; cursor: pointer;
-}
-.btn-restore {
-  background: var(--rust); border: none; color: #fff;
-  font-family: 'DM Sans', sans-serif; font-size: 0.85rem; font-weight: 500;
-  padding: 11px 14px; border-radius: 12px; cursor: pointer;
-}
-#fileInput { display: none; }
+/* RESUMO 6 */
+.resumo6{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.r6card{background:var(--card);border-radius:14px;padding:14px;border:1px solid var(--borda);}
+.r6card.full{grid-column:1/-1;}
+.r6card label{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--medio);display:block;margin-bottom:5px;}
+.r6card .rv{font-family:'Playfair Display',serif;font-size:19px;}
 </style>
 </head>
 <body>
 
 <header>
   <h1>Ateliê Malu Serra</h1>
-  <span>financeiro</span>
+  <p id="hSub">Controle Financeiro</p>
 </header>
+<div class="month-tabs" id="monthTabs"></div>
 
-<div class="mes-bar">
-  <button class="mes-arr" onclick="mudarMes(-1)">‹</button>
-  <div class="mes-label" id="mes-label"></div>
-  <button class="mes-arr" onclick="mudarMes(1)">›</button>
+<div class="nav-tabs">
+  <div class="ntab active" id="nt-lancamento" onclick="mudarTab('lancamento')">Lançamento</div>
+  <div class="ntab" id="nt-resumo" onclick="mudarTab('resumo')">Resumo</div>
+  <div class="ntab" id="nt-graficos" onclick="mudarTab('graficos')">Gráficos</div>
+  <div class="ntab" id="nt-diretorios" onclick="mudarTab('diretorios')">Diretórios</div>
 </div>
 
-<div class="tabs">
-  <button class="tab active" onclick="setTab('lancamento',this)">Lançamento</button>
-  <button class="tab" onclick="setTab('resumo',this)">Resumo</button>
-  <button class="tab" onclick="setTab('graficos',this)">Gráficos</button>
-  <button class="tab" onclick="setTab('diretorios',this)">Diretórios</button>
-</div>
-
-<div class="content">
+<main>
 
   <!-- LANÇAMENTO -->
-  <div class="tab-panel active" id="panel-lancamento">
+  <div class="view active" id="view-lancamento">
 
-    <!-- 1. Receita Bruta -->
+    <!-- 1. RECEITA BRUTA -->
     <div class="bloco">
       <div class="bloco-header">
-        <div class="bloco-num">1</div>
-        <div class="bloco-title">Receita Bruta do Ateliê</div>
+        <div class="bloco-num" style="background:var(--verde)">1</div>
+        <span class="bloco-titulo">Receita Bruta do Ateliê</span>
       </div>
-      <div class="bloco-body">
-        <div class="receita-input-wrap">
-          <span class="receita-prefix">R$</span>
-          <input type="number" class="receita-input" id="receita-bruta" placeholder="0,00"
-            inputmode="decimal" step="0.01" oninput="recalcular(); salvar()">
-        </div>
+      <div class="item-row">
+        <span class="item-nome">Receita do mês</span>
+        <input type="date" class="idata" id="dataRecBruta" onchange="salvarRecBruta()">
+        <input type="number" class="ival" id="valRecBruta" placeholder="0,00" inputmode="decimal" step="0.01"
+          oninput="salvarRecBruta();this.classList.toggle('ok',this.value>0)">
+      </div>
+      <div class="bloco-footer">
+        <span class="bloco-footer-label">① Receita Bruta</span>
+        <span class="bloco-footer-val" id="ftReceitas" style="color:var(--verde)">—</span>
       </div>
     </div>
 
-    <!-- 2. Despesas Ateliê -->
+    <!-- 2. DESPESAS ATELIÊ -->
     <div class="bloco">
       <div class="bloco-header">
-        <div class="bloco-num">2</div>
-        <div class="bloco-title">Despesas do Ateliê</div>
-        <div class="bloco-total" id="total-atelie">R$ 0,00</div>
+        <div class="bloco-num" style="background:var(--terracota)">2</div>
+        <span class="bloco-titulo">Despesas do Ateliê</span>
       </div>
-      <div class="bloco-body" id="secao-atelie"></div>
+      <div id="secDespAtelier"></div>
+      <div class="bloco-footer">
+        <span class="bloco-footer-label">Total Despesas Ateliê</span>
+        <span class="bloco-footer-val" id="ftDespAtelier" style="color:var(--terracota)">—</span>
+      </div>
     </div>
 
-    <!-- 3. Receita Líquida -->
+    <!-- 3. RECEITA LÍQUIDA -->
+    <div class="resultado-bloco" id="blocoLiquido" style="background:var(--verde-l);">
+      <div>
+        <div class="rlabel" style="color:var(--verde)">③ Receita Líquida do Ateliê</div>
+        <div class="rval" id="receitaLiquida" style="color:var(--verde)">—</div>
+      </div>
+      <span style="font-size:32px;">🌿</span>
+    </div>
+
+    <!-- 4. GASTOS DA CASA -->
     <div class="bloco">
       <div class="bloco-header">
-        <div class="bloco-num">3</div>
-        <div class="bloco-title">Receita Líquida</div>
+        <div class="bloco-num" style="background:var(--azul)">4</div>
+        <span class="bloco-titulo">Gastos da Casa</span>
       </div>
-      <div class="bloco-body">
-        <div class="liquida-display" id="liquida-display">
-          <span class="liquida-label">Receita Bruta − Despesas Ateliê</span>
-          <span class="liquida-valor" id="liquida-valor">R$ 0,00</span>
-        </div>
+      <div id="secCasa"></div>
+      <div class="bloco-footer">
+        <span class="bloco-footer-label">Total Casa</span>
+        <span class="bloco-footer-val" id="ftCasa" style="color:var(--azul)">—</span>
       </div>
     </div>
 
-    <!-- 4. Gastos da Casa -->
+    <!-- 5. GASTOS PESSOAIS -->
     <div class="bloco">
       <div class="bloco-header">
-        <div class="bloco-num">4</div>
-        <div class="bloco-title">Gastos da Casa</div>
-        <div class="bloco-total" id="total-casa">R$ 0,00</div>
+        <div class="bloco-num" style="background:var(--roxo)">5</div>
+        <span class="bloco-titulo">Gastos Pessoais</span>
       </div>
-      <div class="bloco-body" id="secao-casa"></div>
+      <div id="secPessoal"></div>
+      <div class="bloco-footer">
+        <span class="bloco-footer-label">Total Pessoal</span>
+        <span class="bloco-footer-val" id="ftPessoal" style="color:var(--roxo)">—</span>
+      </div>
     </div>
 
-    <!-- 5. Gastos Pessoais -->
+    <!-- 6. INVESTIMENTO -->
     <div class="bloco">
       <div class="bloco-header">
-        <div class="bloco-num">5</div>
-        <div class="bloco-title">Gastos Pessoais</div>
-        <div class="bloco-total" id="total-pessoal">R$ 0,00</div>
+        <div class="bloco-num" style="background:var(--dourado)">6</div>
+        <span class="bloco-titulo">Investimento</span>
       </div>
-      <div class="bloco-body" id="secao-pessoal"></div>
+      <div class="item-row">
+        <span class="item-nome">Valor investido</span>
+        <input type="date" class="idata" id="dataInv" onchange="salvarInv()">
+        <input type="number" class="ival" id="valInv" placeholder="0,00" inputmode="decimal" step="0.01" oninput="salvarInv();this.classList.toggle('ok',this.value>0)">
+      </div>
+      <div class="bloco-footer">
+        <span class="bloco-footer-label">Total Investido</span>
+        <span class="bloco-footer-val" id="ftInv" style="color:var(--dourado)">—</span>
+      </div>
     </div>
 
-    <!-- 6. Investimento -->
+    <!-- SALDO INICIAL -->
     <div class="bloco">
       <div class="bloco-header">
-        <div class="bloco-num">6</div>
-        <div class="bloco-title">Investimento</div>
+        <div class="bloco-num" style="background:var(--medio)">↳</div>
+        <span class="bloco-titulo">Saldo Inicial do Mês</span>
       </div>
-      <div class="bloco-body">
-        <div class="invest-row">
-          <span class="receita-prefix">R$</span>
-          <input type="number" class="invest-input" id="investimento" placeholder="0,00"
-            inputmode="decimal" step="0.01" oninput="recalcular(); salvar()">
-        </div>
+      <div class="item-row">
+        <span class="item-nome">Saldo em conta</span>
+        <input type="number" class="ival" id="valSaldoInicial" placeholder="0,00" inputmode="decimal" step="0.01"
+          oninput="salvarSaldoInicial();this.classList.toggle('ok',this.value>0)" style="width:130px;">
       </div>
     </div>
 
-    <!-- Saldo Final -->
-    <div class="saldo-bar">
-      <span class="saldo-label">Saldo do mês</span>
-      <span class="saldo-valor" id="saldo-final">R$ 0,00</span>
+    <!-- SALDO FINAL -->
+    <div class="resultado-bloco" id="blocoSaldoFinal" style="background:var(--verde-l);">
+      <div>
+        <div class="rlabel" id="lblSaldoFinal" style="color:var(--verde)">Saldo Final do Mês</div>
+        <div class="rval" id="valSaldoFinal" style="color:var(--verde)">—</div>
+      </div>
+      <span style="font-size:32px;">💰</span>
     </div>
 
+    <button class="btn-salvar" onclick="salvarMes()">Salvar mês</button>
   </div>
 
   <!-- RESUMO -->
-  <div class="tab-panel" id="panel-resumo">
-    <div style="overflow-x:auto; border-radius:12px; box-shadow:0 1px 4px rgba(44,34,24,0.08);">
-      <table class="resumo-table" id="resumo-table">
-        <thead>
-          <tr>
-            <th>Mês</th>
-            <th>① Bruta</th>
-            <th>② Despesas</th>
-            <th>③ Líquida</th>
-            <th>④ Casa</th>
-            <th>⑤ Pessoal</th>
-            <th>⑥ Invest.</th>
-            <th>Saldo</th>
-          </tr>
-        </thead>
-        <tbody id="resumo-body"></tbody>
-      </table>
-    </div>
+  <div class="view" id="view-resumo">
+    <div id="resumoContent"></div>
   </div>
 
   <!-- GRÁFICOS -->
-  <div class="tab-panel" id="panel-graficos">
-    <div class="chart-wrap"><div class="chart-title">① Receita Bruta</div><canvas id="chart1"></canvas></div>
-    <div class="chart-wrap"><div class="chart-title">② Despesas Ateliê</div><canvas id="chart2"></canvas></div>
-    <div class="chart-wrap"><div class="chart-title">③ Receita Líquida</div><canvas id="chart3"></canvas></div>
-    <div class="chart-wrap"><div class="chart-title">④ Gastos da Casa</div><canvas id="chart4"></canvas></div>
-    <div class="chart-wrap"><div class="chart-title">⑤ Gastos Pessoais</div><canvas id="chart5"></canvas></div>
-    <div class="chart-wrap"><div class="chart-title">⑥ Investimento</div><canvas id="chart6"></canvas></div>
+  <div class="view" id="view-graficos">
+    <div id="graficosContent"></div>
   </div>
 
   <!-- DIRETÓRIOS -->
-  <div class="tab-panel" id="panel-diretorios">
-    <div class="dir-section">
-      <div class="dir-header">
-        🏺 Ateliê — Despesas fixas
-        <span style="font-size:0.72rem;opacity:0.7">Bloco ②</span>
+  <div class="view" id="view-diretorios">
+    <div class="dir-grid">
+      <div class="dir-card" onclick="abrirDir('atelie')">
+        <div class="dir-icon">🏺</div>
+        <div class="dir-nome">Gastos do Ateliê</div>
       </div>
-      <div class="dir-body">
-        <div id="dir-atelie"></div>
-        <div class="dir-add">
-          <input class="dir-input" type="text" id="input-atelie" placeholder="Novo item...">
-          <button class="dir-btn" onclick="addDir('atelie')">+</button>
-        </div>
+      <div class="dir-card" onclick="abrirDir('casa')">
+        <div class="dir-icon">🏠</div>
+        <div class="dir-nome">Gastos da Casa</div>
       </div>
-    </div>
-    <div class="dir-section">
-      <div class="dir-header">
-        🏠 Casa — Gastos fixos
-        <span style="font-size:0.72rem;opacity:0.7">Bloco ④</span>
-      </div>
-      <div class="dir-body">
-        <div id="dir-casa"></div>
-        <div class="dir-add">
-          <input class="dir-input" type="text" id="input-casa" placeholder="Novo item...">
-          <button class="dir-btn" onclick="addDir('casa')">+</button>
-        </div>
+      <div class="dir-card" onclick="abrirDir('pessoal')">
+        <div class="dir-icon">✨</div>
+        <div class="dir-nome">Gastos Pessoais</div>
       </div>
     </div>
-    <div class="dir-section">
-      <div class="dir-header">
-        ✨ Pessoal — Gastos fixos
-        <span style="font-size:0.72rem;opacity:0.7">Bloco ⑤</span>
-      </div>
-      <div class="dir-body">
-        <div id="dir-pessoal"></div>
-        <div class="dir-add">
-          <input class="dir-input" type="text" id="input-pessoal" placeholder="Novo item...">
-          <button class="dir-btn" onclick="addDir('pessoal')">+</button>
-        </div>
-      </div>
-    </div>
+    <p style="font-size:12px;color:var(--medio);text-align:center;margin-top:8px;">Toque em um diretório para adicionar ou remover itens</p>
   </div>
 
-</div>
+</main>
 
-<div class="bottom-bar">
-  <button class="btn-save" onclick="salvar(); alert('Salvo!')">💾 Salvar</button>
-  <button class="btn-backup" onclick="baixarBackup()">📤 Backup</button>
-  <button class="btn-restore" onclick="document.getElementById('fileInput').click()">📂 Restaurar</button>
+<!-- MODAL DIRETÓRIO -->
+<div class="modal-overlay" id="modalOverlay" onclick="fecharModalDir(event)">
+  <div class="modal-sheet">
+    <div class="modal-title" id="modalDirTitulo">Diretório</div>
+    <div id="modalDirItens"></div>
+    <div class="add-item-row">
+      <input type="text" class="add-item-input" id="novoItemInput" placeholder="Novo item...">
+      <button class="btn-add-item" onclick="adicionarItemDir()">+ Adicionar</button>
+    </div>
+    <button class="btn-close-modal" onclick="fecharModalDir()">Fechar</button>
+  </div>
 </div>
-<input type="file" id="fileInput" accept=".json" onchange="restaurar(event)">
 
 <script>
-// ── DIRETÓRIOS PADRÃO ────────────────────────────────────────────────────────
-const DIRS_DEFAULT = {
-  atelie: ['Mariana','Simples','Contador','Dare','Darf','Zeramics','Graia','Pri Spaluto','Hobby Ceram','Terra Nova','Cynthia'],
-  casa: ['Luz','Água','Claro','Papel Primo'],
+// ===== DEFAULTS =====
+const DEFAULT_DIRS = {
+  receitas: ['Antonio','Gerson','Gonçala','Mariana','Paulo','Cynthia'],
+  atelie: ['Mariana','Simples','Contador','Dare','Darf','Zeramics','Hobby Cerâmica','Pri Spaluto','Terra Nova','Arte Brasil','Farias','Gaia'],
+  casa: ['Luz','Água','Claro','Papel Primo','Paulo Serra'],
   pessoal: ['Cartão de Crédito','Cabelereiro','Pilates','Fisioterapia','Consultas','Exames']
 };
 
-const MESES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+const MESES = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+const MESES_FULL = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+const CORES = {
+  receitas:'#4A7A3A', atelie:'#C4663A', casa:'#3A5A8A', pessoal:'#6A4A8A', inv:'#8A7A2A'
+};
 
-// ── ESTADO ────────────────────────────────────────────────────────────────────
-let mesAtual = new Date().getMonth();
-let anoAtual = new Date().getFullYear();
+// ===== STATE =====
+let dados = JSON.parse(localStorage.getItem('atelie_v3') || '{}');
+let dirs = JSON.parse(localStorage.getItem('atelie_dirs_v3') || 'null') || JSON.parse(JSON.stringify(DEFAULT_DIRS));
+const hoje = new Date();
+let mesAtual = `${hoje.getFullYear()}-${String(hoje.getMonth()+1).padStart(2,'0')}`;
 let tabAtual = 'lancamento';
-let dirs = {};
+let dirAtual = null;
 let charts = {};
 
-// ── INIT ──────────────────────────────────────────────────────────────────────
-function init() {
-  // Carregar diretórios
-  try {
-    const d = localStorage.getItem('fin_dirs');
-    dirs = d ? JSON.parse(d) : JSON.parse(JSON.stringify(DIRS_DEFAULT));
-  } catch(e) { dirs = JSON.parse(JSON.stringify(DIRS_DEFAULT)); }
+function salvarState() { localStorage.setItem('atelie_v3', JSON.stringify(dados)); }
+function salvarDirs() { localStorage.setItem('atelie_dirs_v3', JSON.stringify(dirs)); }
+function getMes() { if(!dados[mesAtual]) dados[mesAtual]={}; return dados[mesAtual]; }
+function key(sec,nome) { return `${sec}||${nome}`; }
 
-  atualizarMesLabel();
-  renderDirs();
-  carregarMes();
-  renderSecoes();
+// ===== TABS =====
+function renderTabs() {
+  const c = document.getElementById('monthTabs');
+  const meses = [];
+  for(let i=-5;i<=1;i++){
+    const d=new Date(hoje.getFullYear(),hoje.getMonth()+i,1);
+    const k=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+    meses.push({k,label:`${MESES[d.getMonth()]} ${d.getFullYear()}`});
+  }
+  c.innerHTML = meses.map(m=>`<button class="mtab ${m.k===mesAtual?'active':''}" onclick="trocarMes('${m.k}')">${m.label}</button>`).join('');
+}
+function trocarMes(k){ mesAtual=k; renderTabs(); renderTab(); }
+
+// ===== NAV =====
+function mudarTab(t){
+  tabAtual=t;
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.ntab').forEach(v=>v.classList.remove('active'));
+  document.getElementById(`view-${t}`).classList.add('active');
+  document.getElementById(`nt-${t}`).classList.add('active');
+  renderTab();
+}
+function renderTab(){
+  if(tabAtual==='lancamento') renderLancamento();
+  if(tabAtual==='resumo') renderResumo();
+  if(tabAtual==='graficos') renderGraficos();
+}
+
+// ===== LANÇAMENTO =====
+function renderLancamento(){
+  renderRecBruta();
+  renderSecao('secDespAtelier','atelie','despesa');
+  renderSecao('secCasa','casa','despesa');
+  renderSecao('secPessoal','pessoal','despesa');
+  renderInv();
   recalcular();
 }
 
-// ── MES ───────────────────────────────────────────────────────────────────────
-function chave() { return `fin_${anoAtual}_${String(mesAtual+1).padStart(2,'0')}`; }
+function renderRecBruta(){
+  const d = getMes();
+  const rec = d['__recbruta'] || {};
+  const el = document.getElementById('valRecBruta');
+  const elD = document.getElementById('dataRecBruta');
+  if(el){ el.value = rec.valor||''; if(rec.valor && parseFloat(rec.valor)>0) el.classList.add('ok'); }
+  if(elD) elD.value = rec.data||'';
+}
 
-function mudarMes(dir) {
-  salvar();
-  mesAtual += dir;
-  if (mesAtual < 0) { mesAtual = 11; anoAtual--; }
-  if (mesAtual > 11) { mesAtual = 0; anoAtual++; }
-  atualizarMesLabel();
-  carregarMes();
-  renderSecoes();
+function salvarRecBruta(){
+  const d = getMes();
+  if(!d['__recbruta']) d['__recbruta']={};
+  const el = document.getElementById('valRecBruta');
+  const elD = document.getElementById('dataRecBruta');
+  if(el) d['__recbruta'].valor = el.value;
+  if(elD) d['__recbruta'].data = elD.value;
   recalcular();
 }
 
-function atualizarMesLabel() {
-  document.getElementById('mes-label').textContent = `${MESES[mesAtual]} ${anoAtual}`;
+function renderSecao(elId, dirId, tipo){
+  const d = getMes();
+  const itens = dirs[dirId].filter(n => n && n.trim() !== '');
+  document.getElementById(elId).innerHTML = itens.map(nome=>{
+    const k = key(dirId,nome);
+    const entry = d[k] || {};
+    const val = entry.valor||'';
+    const dt = entry.data||'';
+    const filled = val && parseFloat(val)>0;
+    return `<div class="item-row">
+      <span class="item-nome">${nome}</span>
+      <input type="date" class="idata" value="${dt}" onchange="setEntrada('${dirId}','${nome}',null,this.value)">
+      <input type="number" class="ival ${filled?'ok':''}" placeholder="0,00" value="${val}" inputmode="decimal" step="0.01"
+        oninput="setEntrada('${dirId}','${nome}',this.value,null);this.classList.toggle('ok',this.value>0)">
+    </div>`;
+  }).join('');
 }
 
-// ── STORAGE ───────────────────────────────────────────────────────────────────
-let dadosMes = {};
-
-function carregarMes() {
-  try {
-    const raw = localStorage.getItem(chave());
-    dadosMes = raw ? JSON.parse(raw) : {};
-  } catch(e) { dadosMes = {}; }
-
-  // Preencher campos
-  const rb = document.getElementById('receita-bruta');
-  const inv = document.getElementById('investimento');
-  if (rb) rb.value = dadosMes['receita-bruta'] || '';
-  if (inv) inv.value = dadosMes['investimento'] || '';
+function renderInv(){
+  const d = getMes();
+  const inv = d['__inv'] || {};
+  document.getElementById('valInv').value = inv.valor||'';
+  document.getElementById('dataInv').value = inv.data||'';
+  if(inv.valor && parseFloat(inv.valor)>0) document.getElementById('valInv').classList.add('ok');
+  const si = document.getElementById('valSaldoInicial');
+  if(si){
+    si.value = d['__saldoinicial']?.valor||'';
+    if(si.value && parseFloat(si.value)>0) si.classList.add('ok');
+  }
 }
 
-function salvar() {
-  // Receita bruta e investimento
-  const rb = document.getElementById('receita-bruta');
-  const inv = document.getElementById('investimento');
-  if (rb) dadosMes['receita-bruta'] = rb.value;
-  if (inv) dadosMes['investimento'] = inv.value;
-
-  // Itens de cada seção
-  ['atelie','casa','pessoal'].forEach(dir => {
-    dirs[dir].forEach(nome => {
-      const idVal = `val-${dir}-${nome}`;
-      const idDt = `dt-${dir}-${nome}`;
-      const elV = document.getElementById(idVal);
-      const elD = document.getElementById(idDt);
-      if (elV) dadosMes[`${dir}__${nome}__val`] = elV.value;
-      if (elD) dadosMes[`${dir}__${nome}__dt`] = elD.value;
-    });
-  });
-
-  try { localStorage.setItem(chave(), JSON.stringify(dadosMes)); } catch(e) {}
-  try { localStorage.setItem('fin_dirs', JSON.stringify(dirs)); } catch(e) {}
+function setEntrada(dirId, nome, valor, data){
+  const d = getMes();
+  const k = key(dirId,nome);
+  if(!d[k]) d[k]={};
+  if(valor!==null) d[k].valor=valor;
+  if(data!==null) d[k].data=data;
+  recalcular();
 }
 
-// ── RENDER SEÇÕES ─────────────────────────────────────────────────────────────
-function renderSecoes() {
-  ['atelie','casa','pessoal'].forEach(dir => {
-    const el = document.getElementById(`secao-${dir}`);
-    if (!el) return;
-    const itens = (dirs[dir] || []).filter(n => n && n.trim());
-    el.innerHTML = itens.map(nome => {
-      const val = dadosMes[`${dir}__${nome}__val`] || '';
-      const dt = dadosMes[`${dir}__${nome}__dt`] || '';
-      const ok = val && parseFloat(val) > 0;
-      return `<div class="item-row">
-        <span class="item-nome">${nome}</span>
-        <input type="date" class="idata" id="dt-${dir}-${nome}" value="${dt}"
-          onchange="dadosMes['${dir}__${nome}__dt']=this.value; salvar()">
-        <input type="number" class="ival ${ok?'ok':''}" id="val-${dir}-${nome}"
-          placeholder="0,00" value="${val}" inputmode="decimal" step="0.01"
-          oninput="dadosMes['${dir}__${nome}__val']=this.value; this.classList.toggle('ok',this.value>0); recalcular(); salvar()">
-      </div>`;
-    }).join('');
-  });
+function salvarInv(){
+  const d = getMes();
+  if(!d['__inv']) d['__inv']={};
+  d['__inv'].valor = document.getElementById('valInv').value;
+  d['__inv'].data = document.getElementById('dataInv').value;
+  recalcular();
 }
 
-// ── RECALCULAR ────────────────────────────────────────────────────────────────
-function somarDir(dir) {
-  return (dirs[dir] || []).filter(n => n && n.trim()).reduce((s, nome) => {
-    const v = parseFloat(dadosMes[`${dir}__${nome}__val`] || 0);
-    return s + (isNaN(v) ? 0 : v);
-  }, 0);
+function fmt(n){
+  if(!n||isNaN(n)||n===0) return '—';
+  return 'R$ '+Number(n).toLocaleString('pt-BR',{minimumFractionDigits:2});
 }
 
-function fmt(v) {
-  return 'R$ ' + Math.abs(v).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+function totalDir(dirId){
+  const d = getMes();
+  return dirs[dirId].filter(n=>n&&n.trim()!=='').reduce((s,nome)=>{
+    return s + parseFloat(d[key(dirId,nome)]?.valor||0);
+  },0);
 }
 
-function recalcular() {
-  const bruta = parseFloat(document.getElementById('receita-bruta')?.value || 0) || 0;
-  const invest = parseFloat(document.getElementById('investimento')?.value || 0) || 0;
-  const totAtelie = somarDir('atelie');
-  const totCasa = somarDir('casa');
-  const totPessoal = somarDir('pessoal');
-  const liquida = bruta - totAtelie;
-  const saldo = liquida - totCasa - totPessoal - invest;
+function setEl(id, val){ const el = document.getElementById(id); if(el) el.textContent = val; }
 
-  const setEl = (id, v) => { const e = document.getElementById(id); if (e) e.textContent = v; };
-  setEl('total-atelie', fmt(totAtelie));
-  setEl('total-casa', fmt(totCasa));
-  setEl('total-pessoal', fmt(totPessoal));
-  setEl('liquida-valor', (liquida < 0 ? '− ' : '') + fmt(liquida));
-  setEl('saldo-final', (saldo < 0 ? '− ' : '') + fmt(saldo));
-
-  const ld = document.getElementById('liquida-display');
-  if (ld) ld.classList.toggle('negativo', liquida < 0);
-
-  const sf = document.getElementById('saldo-final');
-  if (sf) { sf.classList.toggle('positivo', saldo >= 0); sf.classList.toggle('negativo', saldo < 0); }
+function salvarSaldoInicial(){
+  const d = getMes();
+  const el = document.getElementById('valSaldoInicial');
+  if(!d['__saldoinicial']) d['__saldoinicial']={};
+  d['__saldoinicial'].valor = el ? el.value : '';
+  recalcular();
 }
 
-// ── TABS ──────────────────────────────────────────────────────────────────────
-function setTab(tab, btn) {
-  salvar();
-  tabAtual = tab;
-  document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
-  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById('panel-' + tab).classList.add('active');
+function recalcular(){
+  const tRec = parseFloat(getMes()['__recbruta']?.valor||0);
+  const tAt = totalDir('atelie');
+  const tCasa = totalDir('casa');
+  const tPes = totalDir('pessoal');
+  const d = getMes();
+  const tInv = parseFloat(d['__inv']?.valor||0);
+  const liq = tRec - tAt;
 
-  if (tab === 'resumo') renderResumo();
-  if (tab === 'graficos') renderGraficos();
-  if (tab === 'diretorios') renderDirs();
-}
+  setEl('ftReceitas', fmt(tRec)||'—');
+  setEl('ftDespAtelier', fmt(tAt)||'—');
+  setEl('ftCasa', fmt(tCasa)||'—');
+  setEl('ftPessoal', fmt(tPes)||'—');
+  setEl('ftInv', fmt(tInv)||'—');
 
-// ── RESUMO ────────────────────────────────────────────────────────────────────
-function renderResumo() {
-  const tbody = document.getElementById('resumo-body');
-  if (!tbody) return;
-  const rows = [];
-  for (let a = anoAtual - 1; a <= anoAtual; a++) {
-    for (let m = 0; m < 12; m++) {
-      const k = `fin_${a}_${String(m+1).padStart(2,'0')}`;
-      const raw = localStorage.getItem(k);
-      if (!raw) continue;
-      const d = JSON.parse(raw);
-      const bruta = parseFloat(d['receita-bruta'] || 0) || 0;
-      const invest = parseFloat(d['investimento'] || 0) || 0;
-
-      // Calcular totais dos diretórios para esse mês
-      const calcDir = (dir) => (dirs[dir]||[]).filter(n=>n&&n.trim()).reduce((s,nome) => {
-        return s + (parseFloat(d[`${dir}__${nome}__val`]||0)||0);
-      }, 0);
-      const totAt = calcDir('atelie');
-      const totCa = calcDir('casa');
-      const totPe = calcDir('pessoal');
-      const liq = bruta - totAt;
-      const saldo = liq - totCa - totPe - invest;
-
-      rows.push({ mes: `${MESES[m].slice(0,3)} ${a}`, bruta, totAt, liq, totCa, totPe, invest, saldo });
+  const liqEl = document.getElementById('receitaLiquida');
+  const blocoLiq = document.getElementById('blocoLiquido');
+  if(liqEl) liqEl.textContent = fmt(liq)||'—';
+  if(blocoLiq){
+    const rlabel = blocoLiq.querySelector('.rlabel');
+    if(liq<0){
+      blocoLiq.style.background='var(--vermelho-l)';
+      if(liqEl) liqEl.style.color='var(--vermelho)';
+      if(rlabel) rlabel.style.color='var(--vermelho)';
+    } else {
+      blocoLiq.style.background='var(--verde-l)';
+      if(liqEl) liqEl.style.color='var(--verde)';
+      if(rlabel) rlabel.style.color='var(--verde)';
     }
   }
 
-  tbody.innerHTML = rows.map(r => `
-    <tr>
-      <td>${r.mes}</td>
-      <td class="val positivo">${fmt(r.bruta)}</td>
-      <td class="val negativo">${fmt(r.totAt)}</td>
-      <td class="val ${r.liq>=0?'positivo':'negativo'}">${fmt(r.liq)}</td>
-      <td class="val negativo">${fmt(r.totCa)}</td>
-      <td class="val negativo">${fmt(r.totPe)}</td>
-      <td class="val">${fmt(r.invest)}</td>
-      <td class="val ${r.saldo>=0?'positivo':'negativo'}">${fmt(r.saldo)}</td>
-    </tr>`).join('') || '<tr><td colspan="8" style="text-align:center;color:var(--medium);padding:20px">Nenhum lançamento ainda</td></tr>';
-}
-
-// ── GRÁFICOS ──────────────────────────────────────────────────────────────────
-function renderGraficos() {
-  const labels = [], b1=[], b2=[], b3=[], b4=[], b5=[], b6=[];
-  for (let a = anoAtual - 1; a <= anoAtual; a++) {
-    for (let m = 0; m < 12; m++) {
-      const k = `fin_${a}_${String(m+1).padStart(2,'0')}`;
-      const raw = localStorage.getItem(k);
-      if (!raw) continue;
-      const d = JSON.parse(raw);
-      const bruta = parseFloat(d['receita-bruta']||0)||0;
-      const invest = parseFloat(d['investimento']||0)||0;
-      const calcDir = (dir) => (dirs[dir]||[]).filter(n=>n&&n.trim()).reduce((s,nome) => s+(parseFloat(d[`${dir}__${nome}__val`]||0)||0),0);
-      const totAt = calcDir('atelie'), totCa = calcDir('casa'), totPe = calcDir('pessoal');
-      labels.push(`${MESES[m].slice(0,3)}/${a}`);
-      b1.push(bruta); b2.push(totAt); b3.push(bruta-totAt); b4.push(totCa); b5.push(totPe); b6.push(invest);
+  // Saldo final
+  const saldoIni = parseFloat(getMes()['__saldoinicial']?.valor||0);
+  const saldoFinal = saldoIni + tRec - tAt - tCasa - tPes - tInv;
+  const sfEl = document.getElementById('valSaldoFinal');
+  const sfBloco = document.getElementById('blocoSaldoFinal');
+  const sfLabel = document.getElementById('lblSaldoFinal');
+  if(sfEl) sfEl.textContent = fmt(saldoFinal)||'—';
+  if(sfBloco && sfLabel){
+    if(saldoFinal < 0){
+      sfBloco.style.background='var(--vermelho-l)';
+      sfEl.style.color='var(--vermelho)';
+      sfLabel.style.color='var(--vermelho)';
+    } else {
+      sfBloco.style.background='var(--verde-l)';
+      sfEl.style.color='var(--verde)';
+      sfLabel.style.color='var(--verde)';
     }
   }
-
-  const cor = ['#B5522A','#C96A3A','#6B7C3A','#C49A2B','#6B5B4E','#1565c0'];
-  [[1,b1],[2,b2],[3,b3],[4,b4],[5,b5],[6,b6]].forEach(([n,data]) => {
-    const ctx = document.getElementById(`chart${n}`)?.getContext('2d');
-    if (!ctx) return;
-    if (charts[n]) charts[n].destroy();
-    charts[n] = new Chart(ctx, {
-      type: 'bar',
-      data: { labels, datasets: [{ data, backgroundColor: cor[n-1]+'cc', borderRadius: 6 }] },
-      options: { responsive: true, plugins: { legend: { display: false } },
-        scales: { y: { ticks: { callback: v => 'R$'+v.toLocaleString('pt-BR') } } } }
-    });
-  });
 }
 
-// ── DIRETÓRIOS ────────────────────────────────────────────────────────────────
-function renderDirs() {
-  ['atelie','casa','pessoal'].forEach(dir => {
-    const el = document.getElementById(`dir-${dir}`);
-    if (!el) return;
-    const itens = (dirs[dir]||[]).filter(n=>n&&n.trim());
-    el.innerHTML = itens.map(nome => `
-      <div class="dir-item">
-        <span>${nome}</span>
-        <button class="dir-remove" onclick="removeDir('${dir}','${nome}')">×</button>
-      </div>`).join('') || '<p style="color:var(--medium);font-size:13px;padding:6px 0">Nenhum item</p>';
-  });
+function salvarMes(){
+  salvarState();
+  const btn = document.querySelector('.btn-salvar');
+  btn.textContent='✓ Salvo!'; btn.style.background='var(--verde)';
+  setTimeout(()=>{ btn.textContent='Salvar mês'; btn.style.background=''; },1800);
 }
 
-function addDir(dir) {
-  const inp = document.getElementById(`input-${dir}`);
-  const nome = inp?.value.trim();
-  if (!nome) return;
-  if (!dirs[dir]) dirs[dir] = [];
-  if (!dirs[dir].includes(nome)) dirs[dir].push(nome);
-  inp.value = '';
-  salvar();
-  renderDirs();
-  if (tabAtual === 'lancamento') renderSecoes();
-}
-
-function removeDir(dir, nome) {
-  dirs[dir] = (dirs[dir]||[]).filter(n => n !== nome);
-  salvar();
-  renderDirs();
-  if (tabAtual === 'lancamento') renderSecoes();
-}
-
-// ── BACKUP ────────────────────────────────────────────────────────────────────
-function baixarBackup() {
-  salvar();
-  const todos = {};
-  for (let i = 0; i < localStorage.length; i++) {
-    const k = localStorage.key(i);
-    if (k && (k.startsWith('fin_'))) todos[k] = localStorage.getItem(k);
+// ===== RESUMO =====
+function renderResumo(){
+  const chaves = Object.keys(dados).sort().reverse();
+  if(!chaves.length){
+    document.getElementById('resumoContent').innerHTML=`<div style="text-align:center;padding:50px 20px;color:var(--medio);font-size:13px;">Nenhum mês salvo ainda</div>`;
+    return;
   }
-  const blob = new Blob([JSON.stringify(todos, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  const d = new Date();
-  a.href = url;
-  a.download = `financeiro-backup-${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}.json`;
-  a.click(); URL.revokeObjectURL(url);
+
+  document.getElementById('resumoContent').innerHTML = chaves.map(chave=>{
+    const [ano,mes] = chave.split('-');
+    const d = dados[chave];
+    const tRec = parseFloat(d['__recbruta']?.valor||0);
+    const tAt = calcTotalDir(d,'atelie');
+    const tCasa = calcTotalDir(d,'casa');
+    const tPes = calcTotalDir(d,'pessoal');
+    const tInv = parseFloat(d['__inv']?.valor||0);
+    const liq = tRec - tAt;
+    const sobrou = liq - tCasa - tPes - tInv;
+
+    return `<div style="background:var(--card);border-radius:16px;border:1px solid var(--borda);margin-bottom:12px;overflow:hidden;">
+      <div style="background:var(--escuro);padding:12px 16px;">
+        <span style="font-family:'Playfair Display',serif;font-size:16px;color:var(--creme);">${MESES_FULL[parseInt(mes)-1]} ${ano}</span>
+      </div>
+      <div style="padding:4px 0;">
+        ${rRow('① Receita Bruta', tRec, CORES.receitas)}
+        ${rRow('② Despesas Ateliê', tAt, CORES.atelie)}
+        ${rRowDest('③ Receita Líquida', liq, liq>=0?CORES.receitas:CORES.atelie)}
+        ${rRow('④ Gastos da Casa', tCasa, CORES.casa)}
+        ${rRow('⑤ Gastos Pessoais', tPes, CORES.pessoal)}
+        ${rRow('⑥ Investimento', tInv, CORES.inv)}
+        ${rRow('Saldo Inicial', parseFloat(d['__saldoinicial']?.valor||0), '#7A5C44')}
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:var(--fundo);border-top:1.5px solid var(--borda);">
+        <span style="font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--medio);">Saldo Final</span>
+        <span style="font-family:'Playfair Display',serif;font-size:20px;font-weight:600;color:${sobrou>=0?CORES.receitas:CORES.atelie}">${fmt(sobrou)}</span>
+      </div>
+    </div>`;
+  }).join('');
 }
 
-function restaurar(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    try {
-      const dados = JSON.parse(e.target.result);
-      Object.entries(dados).forEach(([k,v]) => localStorage.setItem(k,v));
-      init();
-      alert('Backup restaurado!');
-    } catch(e) { alert('Erro ao restaurar.'); }
-  };
-  reader.readAsText(file);
-  event.target.value = '';
+function rRow(label, val, cor){
+  return `<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 16px;border-bottom:1px solid var(--fundo);">
+    <span style="font-size:13px;color:var(--medio);">${label}</span>
+    <span style="font-family:'Playfair Display',serif;font-size:14px;color:${cor};">${fmt(val)}</span>
+  </div>`;
+}
+function rRowDest(label, val, cor){
+  return `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 16px;border-bottom:1px solid var(--borda);background:${val>=0?'var(--verde-l)':'var(--vermelho-l)'};">
+    <span style="font-size:13px;font-weight:500;color:${cor};">${label}</span>
+    <span style="font-family:'Playfair Display',serif;font-size:16px;font-weight:600;color:${cor};">${fmt(val)}</span>
+  </div>`;
 }
 
-// ── START ─────────────────────────────────────────────────────────────────────
-init();
+function calcTotalDir(d, dirId){
+  return dirs[dirId].reduce((s,nome,i)=>{
+    const k = nome ? key(dirId,nome) : key(dirId,`__blank_${i}`);
+    return s+parseFloat(d[k]?.valor||0);
+  },0);
+}
+
+// ===== GRÁFICOS =====
+function renderGraficos(){
+  const chaves = Object.keys(dados).sort();
+  if(chaves.length===0){
+    document.getElementById('graficosContent').innerHTML=`<div style="text-align:center;padding:50px;color:var(--medio);font-size:13px;">Salve pelo menos um mês para ver os gráficos</div>`;
+    return;
+  }
+
+  const labels = chaves.map(k=>{ const [y,m]=k.split('-'); return MESES[parseInt(m)-1]+'/'+y.slice(2); });
+  const recBruta = chaves.map(k=>parseFloat(dados[k]['__recbruta']?.valor||0));
+  const despAt = chaves.map(k=>calcTotalDir(dados[k],'atelie'));
+  const recLiq = chaves.map((k,i)=>recBruta[i]-despAt[i]);
+  const casa = chaves.map(k=>calcTotalDir(dados[k],'casa'));
+  const pessoal = chaves.map(k=>calcTotalDir(dados[k],'pessoal'));
+  const inv = chaves.map(k=>parseFloat(dados[k]['__inv']?.valor||0));
+  const saldo = chaves.map((k,i)=>recLiq[i]-casa[i]-pessoal[i]-inv[i]);
+
+  // destroy old charts
+  Object.values(charts).forEach(c=>{try{c.destroy()}catch(e){}});
+  charts={};
+
+  document.getElementById('graficosContent').innerHTML = `
+    <div class="graficos-grid">
+      <div class="grafico-card"><div class="grafico-titulo">① Receita Bruta vs ② Despesas Ateliê</div><div class="chart-wrap"><canvas id="ch1"></canvas></div></div>
+      <div class="grafico-card"><div class="grafico-titulo">③ Receita Líquida do Ateliê</div><div class="chart-wrap"><canvas id="ch2"></canvas></div></div>
+      <div class="grafico-card"><div class="grafico-titulo">④ Gastos da Casa</div><div class="chart-wrap"><canvas id="ch3"></canvas></div></div>
+      <div class="grafico-card"><div class="grafico-titulo">⑤ Gastos Pessoais</div><div class="chart-wrap"><canvas id="ch4"></canvas></div></div>
+      <div class="grafico-card"><div class="grafico-titulo">⑥ Investimento</div><div class="chart-wrap"><canvas id="ch5"></canvas></div></div>
+      <div class="grafico-card"><div class="grafico-titulo">Saldo Final por Mês</div><div class="chart-wrap"><canvas id="ch6"></canvas></div></div>
+    </div>`;
+
+  const opts = (yColor)=>({
+    responsive:true, maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>'R$ '+ctx.parsed.y.toLocaleString('pt-BR',{minimumFractionDigits:2})}}},
+    scales:{x:{ticks:{font:{size:10},color:'#7A5C44'},grid:{display:false}},y:{ticks:{font:{size:10},color:'#7A5C44',callback:v=>'R$'+Math.round(v/1000)+'k'},grid:{color:'#F0E8E0'}}}
+  });
+
+  // Ch1: receita bruta + despesas atelie
+  charts.ch1 = new Chart(document.getElementById('ch1'),{
+    type:'bar',
+    data:{labels,datasets:[
+      {label:'Receita Bruta',data:recBruta,backgroundColor:CORES.receitas+'99',borderColor:CORES.receitas,borderWidth:2,borderRadius:6},
+      {label:'Desp. Ateliê',data:despAt,backgroundColor:CORES.atelie+'99',borderColor:CORES.atelie,borderWidth:2,borderRadius:6}
+    ]},
+    options:{...opts(),plugins:{legend:{display:true,labels:{font:{size:10},color:'#7A5C44'}},tooltip:{callbacks:{label:ctx=>'R$ '+ctx.parsed.y.toLocaleString('pt-BR',{minimumFractionDigits:2})}}},scales:{x:{ticks:{font:{size:10},color:'#7A5C44'},grid:{display:false}},y:{ticks:{font:{size:10},color:'#7A5C44',callback:v=>'R$'+Math.round(v/1000)+'k'},grid:{color:'#F0E8E0'}}},maintainAspectRatio:false,responsive:true}
+  });
+
+  // Ch2: receita líquida — line
+  charts.ch2 = new Chart(document.getElementById('ch2'),{
+    type:'line',
+    data:{labels,datasets:[{data:recLiq,borderColor:CORES.receitas,backgroundColor:CORES.receitas+'22',fill:true,tension:.4,pointBackgroundColor:CORES.receitas,pointRadius:5}]},
+    options:opts(CORES.receitas)
+  });
+
+  // Ch3: casa
+  charts.ch3 = new Chart(document.getElementById('ch3'),{
+    type:'bar',
+    data:{labels,datasets:[{data:casa,backgroundColor:CORES.casa+'99',borderColor:CORES.casa,borderWidth:2,borderRadius:6}]},
+    options:opts(CORES.casa)
+  });
+
+  // Ch4: pessoal
+  charts.ch4 = new Chart(document.getElementById('ch4'),{
+    type:'bar',
+    data:{labels,datasets:[{data:pessoal,backgroundColor:CORES.pessoal+'99',borderColor:CORES.pessoal,borderWidth:2,borderRadius:6}]},
+    options:opts(CORES.pessoal)
+  });
+
+  // Ch5: investimento
+  charts.ch5 = new Chart(document.getElementById('ch5'),{
+    type:'bar',
+    data:{labels,datasets:[{data:inv,backgroundColor:CORES.inv+'99',borderColor:CORES.inv,borderWidth:2,borderRadius:6}]},
+    options:opts(CORES.inv)
+  });
+
+  // Ch6: saldo final — line com fill
+  charts.ch6 = new Chart(document.getElementById('ch6'),{
+    type:'line',
+    data:{labels,datasets:[{data:saldo,borderColor:v=>v>=0?CORES.receitas:CORES.atelie,backgroundColor:ctx=>{
+      const v=ctx.dataset.data[ctx.dataIndex];
+      return v>=0?CORES.receitas+'22':CORES.atelie+'22';
+    },fill:true,tension:.4,pointBackgroundColor:saldo.map(v=>v>=0?CORES.receitas:CORES.atelie),pointRadius:5,segment:{borderColor:ctx=>ctx.p0.parsed.y>=0?CORES.receitas:CORES.atelie}}]},
+    options:opts()
+  });
+}
+
+// ===== DIRETÓRIOS =====
+function abrirDir(dirId){
+  dirAtual = dirId;
+  const nomes = {atelie:'🏺 Gastos do Ateliê', casa:'🏠 Gastos da Casa', pessoal:'✨ Gastos Pessoais'};
+  document.getElementById('modalDirTitulo').textContent = nomes[dirId];
+  renderModalDir();
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function renderModalDir(){
+  const itens = dirs[dirAtual].filter(n=>n); // só nomes preenchidos
+  document.getElementById('modalDirItens').innerHTML = itens.length
+    ? itens.map((nome,i)=>`
+        <div class="modal-item-row">
+          <span class="modal-item-nome">${nome}</span>
+          <button class="btn-del" onclick="removerItemDir('${nome}')">✕</button>
+        </div>`).join('')
+    : `<p style="color:var(--medio);font-size:13px;padding:8px 0;">Nenhum item ainda</p>`;
+}
+
+function adicionarItemDir(){
+  const input = document.getElementById('novoItemInput');
+  const nome = input.value.trim();
+  if(!nome) return;
+  if(!dirs[dirAtual].includes(nome)){
+    // insert before blank slots
+    const blanks = dirs[dirAtual].filter(n=>!n);
+    const filled = dirs[dirAtual].filter(n=>n);
+    dirs[dirAtual] = [...filled, nome, ...blanks];
+    salvarDirs();
+  }
+  input.value='';
+  renderModalDir();
+}
+
+function removerItemDir(nome){
+  dirs[dirAtual] = dirs[dirAtual].filter(n=>n!==nome);
+  salvarDirs();
+  renderModalDir();
+}
+
+function fecharModalDir(e){
+  if(e && e.target!==document.getElementById('modalOverlay')) return;
+  document.getElementById('modalOverlay').classList.remove('open');
+  if(tabAtual==='lancamento') renderLancamento();
+}
+
+// ===== INIT =====
+renderTabs();
+renderLancamento();
 </script>
 </body>
 </html>
