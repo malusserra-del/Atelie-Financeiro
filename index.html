@@ -240,6 +240,12 @@ main{padding:16px 14px 100px;max-width:480px;margin:0 auto;}
     </div>
 
     <button class="btn-salvar" onclick="salvarMes()">Salvar mês</button>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;">
+      <button class="btn-backup" onclick="exportarBackup()">⬇ Exportar backup</button>
+      <button class="btn-backup" onclick="document.getElementById('importInput').click()">⬆ Importar backup</button>
+    </div>
+    <input type="file" id="importInput" accept=".json" style="display:none" onchange="importarBackup(event)">
   </div>
 
   <!-- RESUMO -->
@@ -691,6 +697,48 @@ function fecharModalDir(e){
   if(e && e.target!==document.getElementById('modalOverlay')) return;
   document.getElementById('modalOverlay').classList.remove('open');
   if(tabAtual==='lancamento') renderLancamento();
+}
+
+// ===== BACKUP =====
+function exportarBackup(){
+  const backup = {
+    dados: dados,
+    dirs: dirs,
+    exportadoEm: new Date().toLocaleString('pt-BR')
+  };
+  const json = JSON.stringify(backup, null, 2);
+  const blob = new Blob([json], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const data = new Date().toISOString().slice(0,10);
+  a.href = url;
+  a.download = `atelie-financeiro-backup-${data}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importarBackup(event){
+  const file = event.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e){
+    try {
+      const backup = JSON.parse(e.target.result);
+      if(!backup.dados) { alert('Arquivo inválido!'); return; }
+      if(!confirm('Isso vai substituir todos os dados atuais. Continuar?')) return;
+      dados = backup.dados;
+      if(backup.dirs) dirs = backup.dirs;
+      salvarState();
+      salvarDirs();
+      renderTabs();
+      renderLancamento();
+      alert('✓ Backup restaurado com sucesso!');
+    } catch(err) {
+      alert('Erro ao ler o arquivo. Verifique se é um backup válido.');
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
 }
 
 // ===== INIT =====
