@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ateliê Malu Serra — Financeiro</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root {
+  --terracota:#C4663A; --terracota-l:#F0D0C0;
+  --argila:#D4A882; --creme:#F5EDE3; --fundo:#FAF6F1;
+  --escuro:#2C1A0E; --medio:#7A5C44; --borda:#E8D8C8;
+  --verde:#4A7A3A; --verde-l:#E4F0E0;
+  --vermelho:#A63020; --vermelho-l:#F5E4E1;
+  --azul:#3A5A8A; --azul-l:#E0E8F5;
+  --roxo:#6A4A8A; --roxo-l:#EDE4F5;
+  --dourado:#8A7A2A; --dourado-l:#F5F0D0;
+  --card:#fff;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--fundo);color:var(--escuro);font-family:'DM Sans',sans-serif;font-weight:300;min-height:100vh;}
+
+/* HEADER */
+header{background:var(--escuro);padding:18px 20px 0;position:sticky;top:0;z-index:200;}
+header h1{font-family:'Playfair Display',serif;font-size:19px;color:var(--creme);}
+header p{font-size:10px;color:var(--argila);letter-spacing:.1em;text-transform:uppercase;padding-bottom:12px;}
+.month-tabs{display:flex;overflow-x:auto;background:var(--escuro);padding:0 16px 14px;gap:8px;scrollbar-width:none;}
+.month-tabs::-webkit-scrollbar{display:none;}
+.mtab{flex-shrink:0;padding:6px 16px;border-radius:20px;border:1px solid rgba(255,255,255,.15);background:transparent;color:var(--argila);font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;transition:all .2s;}
+.mtab.active{background:var(--terracota);border-color:var(--terracota);color:#fff;font-weight:500;}
+
+/* NAV TABS */
+.nav-tabs{display:flex;background:#fff;border-bottom:1px solid var(--borda);position:sticky;top:72px;z-index:100;}
+.ntab{flex:1;padding:12px 4px 10px;text-align:center;font-size:11px;color:var(--medio);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;letter-spacing:.03em;}
+.ntab.active{color:var(--terracota);border-bottom-color:var(--terracota);font-weight:500;}
+
+main{padding:16px 14px 100px;max-width:480px;margin:0 auto;}
+
+/* BLOCO NUMERADO */
+.bloco{background:var(--card);border-radius:16px;border:1px solid var(--borda);margin-bottom:12px;overflow:hidden;}
+.bloco-header{display:flex;align-items:center;gap:10px;padding:14px 16px 12px;border-bottom:1px solid var(--borda);}
+.bloco-num{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;flex-shrink:0;color:#fff;}
+.bloco-titulo{font-family:'Playfair Display',serif;font-size:15px;font-weight:400;flex:1;}
+.bloco-total{font-family:'Playfair Display',serif;font-size:16px;font-weight:600;}
+
+/* RECEITA BRUTA — input único grande */
+.receita-bruta-wrap{padding:20px 16px;}
+.rb-label{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--medio);margin-bottom:8px;}
+.rb-input{width:100%;padding:14px 16px;border:2px solid var(--borda);border-radius:12px;font-family:'Playfair Display',serif;font-size:24px;color:var(--verde);background:var(--fundo);outline:none;text-align:right;}
+.rb-input:focus{border-color:var(--verde);background:#fff;}
+
+/* LINHA ITEM */
+.item-row{display:flex;align-items:center;padding:9px 16px;border-bottom:1px solid var(--fundo);gap:8px;}
+.item-row:last-child{border-bottom:none;}
+.item-nome{flex:1;font-size:13px;color:var(--escuro);min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.item-nome.vazio{color:var(--borda);font-style:italic;}
+.idata{width:72px;padding:6px 7px;border:1.5px solid var(--borda);border-radius:8px;font-size:11px;color:var(--medio);background:var(--fundo);outline:none;flex-shrink:0;}
+.idata:focus{border-color:var(--terracota);}
+.ival{width:100px;padding:7px 10px;border:1.5px solid var(--borda);border-radius:8px;font-size:13px;color:var(--escuro);background:var(--fundo);text-align:right;outline:none;flex-shrink:0;}
+.ival:focus{border-color:var(--terracota);background:#fff;}
+.ival.ok{border-color:var(--borda);background:#fff;font-weight:500;}
+
+/* RODAPÉ TOTAL */
+.bloco-footer{display:flex;justify-content:space-between;align-items:center;padding:11px 16px;background:var(--fundo);border-top:1.5px solid var(--borda);}
+.bloco-footer-label{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--medio);}
+.bloco-footer-val{font-family:'Playfair Display',serif;font-size:17px;font-weight:600;}
+
+/* RESULTADO LÍQUIDO */
+.resultado-bloco{border-radius:16px;padding:18px 20px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;}
+.resultado-bloco .rlabel{font-size:11px;text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px;}
+.resultado-bloco .rval{font-family:'Playfair Display',serif;font-size:26px;font-weight:600;}
+
+/* DIRETÓRIO */
+.dir-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px;}
+.dir-card{background:var(--card);border-radius:12px;border:1px solid var(--borda);padding:14px 12px;cursor:pointer;transition:all .2s;text-align:center;}
+.dir-card:active{transform:scale(.97);}
+.dir-icon{font-size:22px;margin-bottom:6px;}
+.dir-nome{font-size:11px;color:var(--medio);line-height:1.3;}
+
+/* MODAL DIRETÓRIO */
+.modal-overlay{position:fixed;inset:0;background:rgba(44,26,14,.55);z-index:300;display:none;align-items:flex-end;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal-sheet{background:#fff;border-radius:24px 24px 0 0;padding:24px 18px 40px;width:100%;max-width:480px;max-height:85vh;overflow-y:auto;animation:slideUp .3s ease;}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-title{font-family:'Playfair Display',serif;font-size:18px;margin-bottom:18px;color:var(--escuro);}
+.modal-item-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--fundo);}
+.modal-item-row:last-child{border-bottom:none;}
+.modal-item-nome{flex:1;font-size:14px;color:var(--escuro);}
+.btn-del{width:28px;height:28px;border-radius:8px;border:none;background:var(--vermelho-l);color:var(--vermelho);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.add-item-row{display:flex;gap:8px;margin-top:14px;}
+.add-item-input{flex:1;padding:11px 13px;border:1.5px solid var(--borda);border-radius:10px;font-size:14px;outline:none;font-family:'DM Sans',sans-serif;}
+.add-item-input:focus{border-color:var(--terracota);}
+.btn-add-item{padding:11px 16px;border-radius:10px;border:none;background:var(--terracota);color:#fff;font-size:14px;cursor:pointer;white-space:nowrap;}
+.btn-close-modal{width:100%;padding:13px;border-radius:12px;border:none;background:var(--fundo);color:var(--medio);font-family:'DM Sans',sans-serif;font-size:14px;cursor:pointer;margin-top:16px;}
+
+/* GRÁFICOS */
+.graficos-grid{display:grid;gap:12px;}
+.grafico-card{background:var(--card);border-radius:16px;border:1px solid var(--borda);padding:16px;}
+.grafico-titulo{font-family:'Playfair Display',serif;font-size:14px;color:var(--escuro);margin-bottom:12px;}
+.chart-wrap{position:relative;height:180px;}
+
+/* SALVAR */
+.btn-salvar{width:100%;padding:14px;border-radius:12px;border:none;background:var(--terracota);color:#fff;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;cursor:pointer;margin-top:4px;letter-spacing:.02em;}
+.btn-salvar:active{opacity:.85;}
+
+.view{display:none;} .view.active{display:block;}
+
+/* RESUMO 6 */
+.resumo6{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.r6card{background:var(--card);border-radius:14px;padding:14px;border:1px solid var(--borda);}
+.r6card.full{grid-column:1/-1;}
+.r6card label{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--medio);display:block;margin-bottom:5px;}
+.r6card .rv{font-family:'Playfair Display',serif;font-size:19px;}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Ateliê Malu Serra</h1>
+  <p id="hSub">Controle Financeiro</p>
+</header>
+<div class="month-tabs" id="monthTabs"></div>
+
+<div class="nav-tabs">
+  <div class="ntab active" id="nt-lancamento" onclick="mudarTab('lancamento')">Lançamento</div>
+  <div class="ntab" id="nt-resumo" onclick="mudarTab('resumo')">Resumo</div>
+  <div class="ntab" id="nt-graficos" onclick="mudarTab('graficos')">Gráficos</div>
+  <div class="ntab" id="nt-diretorios" onclick="mudarTab('diretorios')">Diretórios</div>
+</div>
+
+<main>
+
+  <!-- LANÇAMENTO -->
+  <div class="view active" id="view-lancamento">
+
+    <!-- 1. RECEITA BRUTA -->
+    <div class="bloco">
+      <div class="bloco-header">
+        <div class="bloco-num" style="background:var(--verde)">1</div>
+        <span class="bloco-titulo">Receita Bruta do Ateliê</span>
+      </div>
+      <div class="item-row">
+        <span class="item-nome">Receita do mês</span>
+        <input type="date" class="idata" id="dataRecBruta" onchange="salvarRecBruta()">
+        <input type="number" class="ival" id="valRecBruta" placeholder="0,00" inputmode="decimal" step="0.01"
+          oninput="salvarRecBruta();this.classList.toggle('ok',this.value>0)">
+      </div>
+      <div class="bloco-footer">
+        <span class="bloco-footer-label">① Receita Bruta</span>
+        <span class="bloco-footer-val" id="ftReceitas" style="color:var(--verde)">—</span>
+      </div>
+    </div>
+
+    <!-- 2. DESPESAS ATELIÊ -->
+    <div class="bloco">
+      <div class="bloco-header">
+        <div class="bloco-num" style="background:var(--terracota)">2</div>
+        <span class="bloco-titulo">Despesas do Ateliê</span>
+      </div>
+      <div id="secDespAtelier"></div>
+      <div class="bloco-footer">
+        <span class="bloco-footer-label">Total Despesas Ateliê</span>
+        <span class="bloco-footer-val" id="ftDespAtelier" style="color:var(--terracota)">—</span>
+      </div>
+    </div>
+
+    <!-- 3. RECEITA LÍQUIDA -->
+    <div class="resultado-bloco" id="blocoLiquido" style="background:var(--verde-l);">
+      <div>
+        <div class="rlabel" style="color:var(--verde)">③ Receita Líquida do Ateliê</div>
+        <div class="rval" id="receitaLiquida" style="color:var(--verde)">—</div>
+      </div>
+      <span style="font-size:32px;">🌿</span>
+    </div>
+
+    <!-- 4. GASTOS DA CASA -->
+    <div class="bloco">
+      <div class="bloco-header">
+        <div class="bloco-num" style="background:var(--azul)">4</div>
+        <span class="bloco-titulo">Gastos da Casa</span>
+      </div>
+      <div id="secCasa"></div>
+      <div class="bloco-footer">
+        <span class="bloco-footer-label">Total Casa</span>
+        <span class="bloco-footer-val" id="ftCasa" style="color:var(--azul)">—</span>
+      </div>
+    </div>
+
+    <!-- 5. GASTOS PESSOAIS -->
+    <div class="bloco">
+      <div class="bloco-header">
+        <div class="bloco-num" style="background:var(--roxo)">5</div>
+        <span class="bloco-titulo">Gastos Pessoais</span>
+      </div>
+      <div id="secPessoal"></div>
+      <div class="bloco-footer">
+        <span class="bloco-footer-label">Total Pessoal</span>
+        <span class="bloco-footer-val" id="ftPessoal" style="color:var(--roxo)">—</span>
+      </div>
+    </div>
+
+    <!-- 6. INVESTIMENTO -->
+    <div class="bloco">
+      <div class="bloco-header">
+        <div class="bloco-num" style="background:var(--dourado)">6</div>
+        <span class="bloco-titulo">Investimento</span>
+      </div>
+      <div class="item-row">
+        <span class="item-nome">Valor investido</span>
+        <input type="date" class="idata" id="dataInv" onchange="salvarInv()">
+        <input type="number" class="ival" id="valInv" placeholder="0,00" inputmode="decimal" step="0.01" oninput="salvarInv();this.classList.toggle('ok',this.value>0)">
+      </div>
+      <div class="bloco-footer">
+        <span class="bloco-footer-label">Total Investido</span>
+        <span class="bloco-footer-val" id="ftInv" style="color:var(--dourado)">—</span>
+      </div>
+    </div>
+
+    <!-- SALDO INICIAL -->
+    <div class="bloco">
+      <div class="bloco-header">
+        <div class="bloco-num" style="background:var(--medio)">↳</div>
+        <span class="bloco-titulo">Saldo Inicial do Mês</span>
+      </div>
+      <div class="item-row">
+        <span class="item-nome">Saldo em conta</span>
+        <input type="number" class="ival" id="valSaldoInicial" placeholder="0,00" inputmode="decimal" step="0.01"
+          oninput="salvarSaldoInicial();this.classList.toggle('ok',this.value>0)" style="width:130px;">
+      </div>
+    </div>
+
+    <!-- SALDO FINAL -->
+    <div class="resultado-bloco" id="blocoSaldoFinal" style="background:var(--verde-l);">
+      <div>
+        <div class="rlabel" id="lblSaldoFinal" style="color:var(--verde)">Saldo Final do Mês</div>
+        <div class="rval" id="valSaldoFinal" style="color:var(--verde)">—</div>
+      </div>
+      <span style="font-size:32px;">💰</span>
+    </div>
+
+    <button class="btn-salvar" onclick="salvarMes()">Salvar mês</button>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;">
+      <button class="btn-backup" onclick="exportarBackup()">⬇ Exportar backup</button>
+      <button class="btn-backup" onclick="document.getElementById('importInput').click()">⬆ Importar backup</button>
+    </div>
+    <input type="file" id="importInput" accept=".json" style="display:none" onchange="importarBackup(event)">
+  </div>
+
+  <!-- RESUMO -->
+  <div class="view" id="view-resumo">
+    <div id="resumoContent"></div>
+  </div>
+
+  <!-- GRÁFICOS -->
+  <div class="view" id="view-graficos">
+    <div id="graficosContent"></div>
+  </div>
+
+  <!-- DIRETÓRIOS -->
+  <div class="view" id="view-diretorios">
+    <div class="dir-grid">
+      <div class="dir-card" onclick="abrirDir('atelie')">
+        <div class="dir-icon">🏺</div>
+        <div class="dir-nome">Gastos do Ateliê</div>
+      </div>
+      <div class="dir-card" onclick="abrirDir('casa')">
+        <div class="dir-icon">🏠</div>
+        <div class="dir-nome">Gastos da Casa</div>
+      </div>
+      <div class="dir-card" onclick="abrirDir('pessoal')">
+        <div class="dir-icon">✨</div>
+        <div class="dir-nome">Gastos Pessoais</div>
+      </div>
+    </div>
+    <p style="font-size:12px;color:var(--medio);text-align:center;margin-top:8px;">Toque em um diretório para adicionar ou remover itens</p>
+  </div>
+
+</main>
+
+<!-- MODAL DIRETÓRIO -->
+<div class="modal-overlay" id="modalOverlay" onclick="fecharModalDir(event)">
+  <div class="modal-sheet">
+    <div class="modal-title" id="modalDirTitulo">Diretório</div>
+    <div id="modalDirItens"></div>
+    <div class="add-item-row">
+      <input type="text" class="add-item-input" id="novoItemInput" placeholder="Novo item...">
+      <button class="btn-add-item" onclick="adicionarItemDir()">+ Adicionar</button>
+    </div>
+    <button class="btn-close-modal" onclick="fecharModalDir()">Fechar</button>
+  </div>
+</div>
+
+<script>
+// ===== DEFAULTS =====
+const DEFAULT_DIRS = {
+  receitas: ['Antonio','Gerson','Gonçala','Mariana','Paulo','Cynthia'],
+  atelie: ['Mariana','Simples','Contador','Dare','Darf','Zeramics','Hobby Cerâmica','Pri Spaluto','Terra Nova','Arte Brasil','Farias','Gaia'],
+  casa: ['Luz','Água','Claro','Papel Primo','Paulo Serra'],
+  pessoal: ['Cartão de Crédito','Cabelereiro','Pilates','Fisioterapia','Consultas','Exames']
+};
+
+const MESES = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+const MESES_FULL = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+const CORES = {
+  receitas:'#4A7A3A', atelie:'#C4663A', casa:'#3A5A8A', pessoal:'#6A4A8A', inv:'#8A7A2A'
+};
+
+// ===== STATE =====
+let dados = JSON.parse(localStorage.getItem('atelie_v3') || '{}');
+let dirs = JSON.parse(localStorage.getItem('atelie_dirs_v3') || 'null') || JSON.parse(JSON.stringify(DEFAULT_DIRS));
+const hoje = new Date();
+let mesAtual = `${hoje.getFullYear()}-${String(hoje.getMonth()+1).padStart(2,'0')}`;
+let tabAtual = 'lancamento';
+let dirAtual = null;
+let charts = {};
+
+function salvarState() { localStorage.setItem('atelie_v3', JSON.stringify(dados)); }
+function salvarDirs() { localStorage.setItem('atelie_dirs_v3', JSON.stringify(dirs)); }
+function getMes() { if(!dados[mesAtual]) dados[mesAtual]={}; return dados[mesAtual]; }
+function key(sec,nome) { return `${sec}||${nome}`; }
+
+// ===== TABS =====
+function renderTabs() {
+  const c = document.getElementById('monthTabs');
+  const meses = [];
+  for(let i=-5;i<=1;i++){
+    const d=new Date(hoje.getFullYear(),hoje.getMonth()+i,1);
+    const k=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+    meses.push({k,label:`${MESES[d.getMonth()]} ${d.getFullYear()}`});
+  }
+  c.innerHTML = meses.map(m=>`<button class="mtab ${m.k===mesAtual?'active':''}" onclick="trocarMes('${m.k}')">${m.label}</button>`).join('');
+}
+function trocarMes(k){ mesAtual=k; renderTabs(); renderTab(); }
+
+// ===== NAV =====
+function mudarTab(t){
+  tabAtual=t;
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.ntab').forEach(v=>v.classList.remove('active'));
+  document.getElementById(`view-${t}`).classList.add('active');
+  document.getElementById(`nt-${t}`).classList.add('active');
+  renderTab();
+}
+function renderTab(){
+  if(tabAtual==='lancamento') renderLancamento();
+  if(tabAtual==='resumo') renderResumo();
+  if(tabAtual==='graficos') renderGraficos();
+}
+
+// ===== LANÇAMENTO =====
+function renderLancamento(){
+  renderRecBruta();
+  renderSecao('secDespAtelier','atelie','despesa');
+  renderSecao('secCasa','casa','despesa');
+  renderSecao('secPessoal','pessoal','despesa');
+  renderInv();
+  recalcular();
+}
+
+function renderRecBruta(){
+  const d = getMes();
+  const rec = d['__recbruta'] || {};
+  const el = document.getElementById('valRecBruta');
+  const elD = document.getElementById('dataRecBruta');
+  if(el){ el.value = rec.valor||''; if(rec.valor && parseFloat(rec.valor)>0) el.classList.add('ok'); }
+  if(elD) elD.value = rec.data||'';
+}
+
+function salvarRecBruta(){
+  const d = getMes();
+  if(!d['__recbruta']) d['__recbruta']={};
+  const el = document.getElementById('valRecBruta');
+  const elD = document.getElementById('dataRecBruta');
+  if(el) d['__recbruta'].valor = el.value;
+  if(elD) d['__recbruta'].data = elD.value;
+  recalcular();
+}
+
+function renderSecao(elId, dirId, tipo){
+  const d = getMes();
+  const itens = dirs[dirId].filter(n => n && n.trim() !== '');
+  document.getElementById(elId).innerHTML = itens.map(nome=>{
+    const k = key(dirId,nome);
+    const entry = d[k] || {};
+    const val = entry.valor||'';
+    const dt = entry.data||'';
+    const filled = val && parseFloat(val)>0;
+    return `<div class="item-row">
+      <span class="item-nome">${nome}</span>
+      <input type="date" class="idata" value="${dt}" onchange="setEntrada('${dirId}','${nome}',null,this.value)">
+      <input type="number" class="ival ${filled?'ok':''}" placeholder="0,00" value="${val}" inputmode="decimal" step="0.01"
+        oninput="setEntrada('${dirId}','${nome}',this.value,null);this.classList.toggle('ok',this.value>0)">
+    </div>`;
+  }).join('');
+}
+
+function renderInv(){
+  const d = getMes();
+  const inv = d['__inv'] || {};
+  document.getElementById('valInv').value = inv.valor||'';
+  document.getElementById('dataInv').value = inv.data||'';
+  if(inv.valor && parseFloat(inv.valor)>0) document.getElementById('valInv').classList.add('ok');
+  const si = document.getElementById('valSaldoInicial');
+  if(si){
+    si.value = d['__saldoinicial']?.valor||'';
+    if(si.value && parseFloat(si.value)>0) si.classList.add('ok');
+  }
+}
+
+function setEntrada(dirId, nome, valor, data){
+  const d = getMes();
+  const k = key(dirId,nome);
+  if(!d[k]) d[k]={};
+  if(valor!==null) d[k].valor=valor;
+  if(data!==null) d[k].data=data;
+  recalcular();
+}
+
+function salvarInv(){
+  const d = getMes();
+  if(!d['__inv']) d['__inv']={};
+  d['__inv'].valor = document.getElementById('valInv').value;
+  d['__inv'].data = document.getElementById('dataInv').value;
+  recalcular();
+}
+
+function fmt(n){
+  if(!n||isNaN(n)||n===0) return '—';
+  return 'R$ '+Number(n).toLocaleString('pt-BR',{minimumFractionDigits:2});
+}
+
+function totalDir(dirId){
+  const d = getMes();
+  return dirs[dirId].filter(n=>n&&n.trim()!=='').reduce((s,nome)=>{
+    return s + parseFloat(d[key(dirId,nome)]?.valor||0);
+  },0);
+}
+
+function setEl(id, val){ const el = document.getElementById(id); if(el) el.textContent = val; }
+
+function salvarSaldoInicial(){
+  const d = getMes();
+  const el = document.getElementById('valSaldoInicial');
+  if(!d['__saldoinicial']) d['__saldoinicial']={};
+  d['__saldoinicial'].valor = el ? el.value : '';
+  recalcular();
+}
+
+function recalcular(){
+  const tRec = parseFloat(getMes()['__recbruta']?.valor||0);
+  const tAt = totalDir('atelie');
+  const tCasa = totalDir('casa');
+  const tPes = totalDir('pessoal');
+  const d = getMes();
+  const tInv = parseFloat(d['__inv']?.valor||0);
+  const liq = tRec - tAt;
+
+  setEl('ftReceitas', fmt(tRec)||'—');
+  setEl('ftDespAtelier', fmt(tAt)||'—');
+  setEl('ftCasa', fmt(tCasa)||'—');
+  setEl('ftPessoal', fmt(tPes)||'—');
+  setEl('ftInv', fmt(tInv)||'—');
+
+  const liqEl = document.getElementById('receitaLiquida');
+  const blocoLiq = document.getElementById('blocoLiquido');
+  if(liqEl) liqEl.textContent = fmt(liq)||'—';
+  if(blocoLiq){
+    const rlabel = blocoLiq.querySelector('.rlabel');
+    if(liq<0){
+      blocoLiq.style.background='var(--vermelho-l)';
+      if(liqEl) liqEl.style.color='var(--vermelho)';
+      if(rlabel) rlabel.style.color='var(--vermelho)';
+    } else {
+      blocoLiq.style.background='var(--verde-l)';
+      if(liqEl) liqEl.style.color='var(--verde)';
+      if(rlabel) rlabel.style.color='var(--verde)';
+    }
+  }
+
+  // Saldo final
+  const saldoIni = parseFloat(getMes()['__saldoinicial']?.valor||0);
+  const saldoFinal = saldoIni + tRec - tAt - tCasa - tPes - tInv;
+  const sfEl = document.getElementById('valSaldoFinal');
+  const sfBloco = document.getElementById('blocoSaldoFinal');
+  const sfLabel = document.getElementById('lblSaldoFinal');
+  if(sfEl) sfEl.textContent = fmt(saldoFinal)||'—';
+  if(sfBloco && sfLabel){
+    if(saldoFinal < 0){
+      sfBloco.style.background='var(--vermelho-l)';
+      sfEl.style.color='var(--vermelho)';
+      sfLabel.style.color='var(--vermelho)';
+    } else {
+      sfBloco.style.background='var(--verde-l)';
+      sfEl.style.color='var(--verde)';
+      sfLabel.style.color='var(--verde)';
+    }
+  }
+}
+
+function salvarMes(){
+  salvarState();
+  const btn = document.querySelector('.btn-salvar');
+  btn.textContent='✓ Salvo!'; btn.style.background='var(--verde)';
+  setTimeout(()=>{ btn.textContent='Salvar mês'; btn.style.background=''; },1800);
+}
+
+// ===== RESUMO =====
+function renderResumo(){
+  const chaves = Object.keys(dados).sort().reverse();
+  if(!chaves.length){
+    document.getElementById('resumoContent').innerHTML=`<div style="text-align:center;padding:50px 20px;color:var(--medio);font-size:13px;">Nenhum mês salvo ainda</div>`;
+    return;
+  }
+
+  document.getElementById('resumoContent').innerHTML = chaves.map(chave=>{
+    const [ano,mes] = chave.split('-');
+    const d = dados[chave];
+    const tRec = parseFloat(d['__recbruta']?.valor||0);
+    const tAt = calcTotalDir(d,'atelie');
+    const tCasa = calcTotalDir(d,'casa');
+    const tPes = calcTotalDir(d,'pessoal');
+    const tInv = parseFloat(d['__inv']?.valor||0);
+    const liq = tRec - tAt;
+    const sobrou = liq - tCasa - tPes - tInv;
+
+    return `<div style="background:var(--card);border-radius:16px;border:1px solid var(--borda);margin-bottom:12px;overflow:hidden;">
+      <div style="background:var(--escuro);padding:12px 16px;">
+        <span style="font-family:'Playfair Display',serif;font-size:16px;color:var(--creme);">${MESES_FULL[parseInt(mes)-1]} ${ano}</span>
+      </div>
+      <div style="padding:4px 0;">
+        ${rRow('① Receita Bruta', tRec, CORES.receitas)}
+        ${rRow('② Despesas Ateliê', tAt, CORES.atelie)}
+        ${rRowDest('③ Receita Líquida', liq, liq>=0?CORES.receitas:CORES.atelie)}
+        ${rRow('④ Gastos da Casa', tCasa, CORES.casa)}
+        ${rRow('⑤ Gastos Pessoais', tPes, CORES.pessoal)}
+        ${rRow('⑥ Investimento', tInv, CORES.inv)}
+        ${rRow('Saldo Inicial', parseFloat(d['__saldoinicial']?.valor||0), '#7A5C44')}
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:var(--fundo);border-top:1.5px solid var(--borda);">
+        <span style="font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--medio);">Saldo Final</span>
+        <span style="font-family:'Playfair Display',serif;font-size:20px;font-weight:600;color:${sobrou>=0?CORES.receitas:CORES.atelie}">${fmt(sobrou)}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function rRow(label, val, cor){
+  return `<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 16px;border-bottom:1px solid var(--fundo);">
+    <span style="font-size:13px;color:var(--medio);">${label}</span>
+    <span style="font-family:'Playfair Display',serif;font-size:14px;color:${cor};">${fmt(val)}</span>
+  </div>`;
+}
+function rRowDest(label, val, cor){
+  return `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 16px;border-bottom:1px solid var(--borda);background:${val>=0?'var(--verde-l)':'var(--vermelho-l)'};">
+    <span style="font-size:13px;font-weight:500;color:${cor};">${label}</span>
+    <span style="font-family:'Playfair Display',serif;font-size:16px;font-weight:600;color:${cor};">${fmt(val)}</span>
+  </div>`;
+}
+
+function calcTotalDir(d, dirId){
+  return dirs[dirId].reduce((s,nome,i)=>{
+    const k = nome ? key(dirId,nome) : key(dirId,`__blank_${i}`);
+    return s+parseFloat(d[k]?.valor||0);
+  },0);
+}
+
+// ===== GRÁFICOS =====
+function renderGraficos(){
+  const chaves = Object.keys(dados).sort();
+  if(chaves.length===0){
+    document.getElementById('graficosContent').innerHTML=`<div style="text-align:center;padding:50px;color:var(--medio);font-size:13px;">Salve pelo menos um mês para ver os gráficos</div>`;
+    return;
+  }
+
+  const labels = chaves.map(k=>{ const [y,m]=k.split('-'); return MESES[parseInt(m)-1]+'/'+y.slice(2); });
+  const recBruta = chaves.map(k=>parseFloat(dados[k]['__recbruta']?.valor||0));
+  const despAt = chaves.map(k=>calcTotalDir(dados[k],'atelie'));
+  const recLiq = chaves.map((k,i)=>recBruta[i]-despAt[i]);
+  const casa = chaves.map(k=>calcTotalDir(dados[k],'casa'));
+  const pessoal = chaves.map(k=>calcTotalDir(dados[k],'pessoal'));
+  const inv = chaves.map(k=>parseFloat(dados[k]['__inv']?.valor||0));
+  const saldo = chaves.map((k,i)=>recLiq[i]-casa[i]-pessoal[i]-inv[i]);
+
+  // destroy old charts
+  Object.values(charts).forEach(c=>{try{c.destroy()}catch(e){}});
+  charts={};
+
+  document.getElementById('graficosContent').innerHTML = `
+    <div class="graficos-grid">
+      <div class="grafico-card"><div class="grafico-titulo">① Receita Bruta vs ② Despesas Ateliê</div><div class="chart-wrap"><canvas id="ch1"></canvas></div></div>
+      <div class="grafico-card"><div class="grafico-titulo">③ Receita Líquida do Ateliê</div><div class="chart-wrap"><canvas id="ch2"></canvas></div></div>
+      <div class="grafico-card"><div class="grafico-titulo">④ Gastos da Casa</div><div class="chart-wrap"><canvas id="ch3"></canvas></div></div>
+      <div class="grafico-card"><div class="grafico-titulo">⑤ Gastos Pessoais</div><div class="chart-wrap"><canvas id="ch4"></canvas></div></div>
+      <div class="grafico-card"><div class="grafico-titulo">⑥ Investimento</div><div class="chart-wrap"><canvas id="ch5"></canvas></div></div>
+      <div class="grafico-card"><div class="grafico-titulo">Saldo Final por Mês</div><div class="chart-wrap"><canvas id="ch6"></canvas></div></div>
+    </div>`;
+
+  const opts = (yColor)=>({
+    responsive:true, maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>'R$ '+ctx.parsed.y.toLocaleString('pt-BR',{minimumFractionDigits:2})}}},
+    scales:{x:{ticks:{font:{size:10},color:'#7A5C44'},grid:{display:false}},y:{ticks:{font:{size:10},color:'#7A5C44',callback:v=>'R$'+Math.round(v/1000)+'k'},grid:{color:'#F0E8E0'}}}
+  });
+
+  // Ch1: receita bruta + despesas atelie
+  charts.ch1 = new Chart(document.getElementById('ch1'),{
+    type:'bar',
+    data:{labels,datasets:[
+      {label:'Receita Bruta',data:recBruta,backgroundColor:CORES.receitas+'99',borderColor:CORES.receitas,borderWidth:2,borderRadius:6},
+      {label:'Desp. Ateliê',data:despAt,backgroundColor:CORES.atelie+'99',borderColor:CORES.atelie,borderWidth:2,borderRadius:6}
+    ]},
+    options:{...opts(),plugins:{legend:{display:true,labels:{font:{size:10},color:'#7A5C44'}},tooltip:{callbacks:{label:ctx=>'R$ '+ctx.parsed.y.toLocaleString('pt-BR',{minimumFractionDigits:2})}}},scales:{x:{ticks:{font:{size:10},color:'#7A5C44'},grid:{display:false}},y:{ticks:{font:{size:10},color:'#7A5C44',callback:v=>'R$'+Math.round(v/1000)+'k'},grid:{color:'#F0E8E0'}}},maintainAspectRatio:false,responsive:true}
+  });
+
+  // Ch2: receita líquida — line
+  charts.ch2 = new Chart(document.getElementById('ch2'),{
+    type:'line',
+    data:{labels,datasets:[{data:recLiq,borderColor:CORES.receitas,backgroundColor:CORES.receitas+'22',fill:true,tension:.4,pointBackgroundColor:CORES.receitas,pointRadius:5}]},
+    options:opts(CORES.receitas)
+  });
+
+  // Ch3: casa
+  charts.ch3 = new Chart(document.getElementById('ch3'),{
+    type:'bar',
+    data:{labels,datasets:[{data:casa,backgroundColor:CORES.casa+'99',borderColor:CORES.casa,borderWidth:2,borderRadius:6}]},
+    options:opts(CORES.casa)
+  });
+
+  // Ch4: pessoal
+  charts.ch4 = new Chart(document.getElementById('ch4'),{
+    type:'bar',
+    data:{labels,datasets:[{data:pessoal,backgroundColor:CORES.pessoal+'99',borderColor:CORES.pessoal,borderWidth:2,borderRadius:6}]},
+    options:opts(CORES.pessoal)
+  });
+
+  // Ch5: investimento
+  charts.ch5 = new Chart(document.getElementById('ch5'),{
+    type:'bar',
+    data:{labels,datasets:[{data:inv,backgroundColor:CORES.inv+'99',borderColor:CORES.inv,borderWidth:2,borderRadius:6}]},
+    options:opts(CORES.inv)
+  });
+
+  // Ch6: saldo final — line com fill
+  charts.ch6 = new Chart(document.getElementById('ch6'),{
+    type:'line',
+    data:{labels,datasets:[{data:saldo,borderColor:v=>v>=0?CORES.receitas:CORES.atelie,backgroundColor:ctx=>{
+      const v=ctx.dataset.data[ctx.dataIndex];
+      return v>=0?CORES.receitas+'22':CORES.atelie+'22';
+    },fill:true,tension:.4,pointBackgroundColor:saldo.map(v=>v>=0?CORES.receitas:CORES.atelie),pointRadius:5,segment:{borderColor:ctx=>ctx.p0.parsed.y>=0?CORES.receitas:CORES.atelie}}]},
+    options:opts()
+  });
+}
+
+// ===== DIRETÓRIOS =====
+function abrirDir(dirId){
+  dirAtual = dirId;
+  const nomes = {atelie:'🏺 Gastos do Ateliê', casa:'🏠 Gastos da Casa', pessoal:'✨ Gastos Pessoais'};
+  document.getElementById('modalDirTitulo').textContent = nomes[dirId];
+  renderModalDir();
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function renderModalDir(){
+  const itens = dirs[dirAtual].filter(n=>n); // só nomes preenchidos
+  document.getElementById('modalDirItens').innerHTML = itens.length
+    ? itens.map((nome,i)=>`
+        <div class="modal-item-row">
+          <span class="modal-item-nome">${nome}</span>
+          <button class="btn-del" onclick="removerItemDir('${nome}')">✕</button>
+        </div>`).join('')
+    : `<p style="color:var(--medio);font-size:13px;padding:8px 0;">Nenhum item ainda</p>`;
+}
+
+function adicionarItemDir(){
+  const input = document.getElementById('novoItemInput');
+  const nome = input.value.trim();
+  if(!nome) return;
+  if(!dirs[dirAtual].includes(nome)){
+    // insert before blank slots
+    const blanks = dirs[dirAtual].filter(n=>!n);
+    const filled = dirs[dirAtual].filter(n=>n);
+    dirs[dirAtual] = [...filled, nome, ...blanks];
+    salvarDirs();
+  }
+  input.value='';
+  renderModalDir();
+}
+
+function removerItemDir(nome){
+  dirs[dirAtual] = dirs[dirAtual].filter(n=>n!==nome);
+  salvarDirs();
+  renderModalDir();
+}
+
+function fecharModalDir(e){
+  if(e && e.target!==document.getElementById('modalOverlay')) return;
+  document.getElementById('modalOverlay').classList.remove('open');
+  if(tabAtual==='lancamento') renderLancamento();
+}
+
+// ===== BACKUP =====
+function exportarBackup(){
+  const backup = {
+    dados: dados,
+    dirs: dirs,
+    exportadoEm: new Date().toLocaleString('pt-BR')
+  };
+  const json = JSON.stringify(backup, null, 2);
+  const blob = new Blob([json], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const data = new Date().toISOString().slice(0,10);
+  a.href = url;
+  a.download = `atelie-financeiro-backup-${data}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importarBackup(event){
+  const file = event.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e){
+    try {
+      const backup = JSON.parse(e.target.result);
+      if(!backup.dados) { alert('Arquivo inválido!'); return; }
+      if(!confirm('Isso vai substituir todos os dados atuais. Continuar?')) return;
+      dados = backup.dados;
+      if(backup.dirs) dirs = backup.dirs;
+      salvarState();
+      salvarDirs();
+      renderTabs();
+      renderLancamento();
+      alert('✓ Backup restaurado com sucesso!');
+    } catch(err) {
+      alert('Erro ao ler o arquivo. Verifique se é um backup válido.');
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+// ===== INIT =====
+renderTabs();
+renderLancamento();
+</script>
+</body>
+</html>
