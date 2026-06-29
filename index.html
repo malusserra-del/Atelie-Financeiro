@@ -16,7 +16,6 @@
   --azul:#3A5A8A; --azul-l:#E0E8F5;
   --roxo:#6A4A8A; --roxo-l:#EDE4F5;
   --dourado:#8A7A2A; --dourado-l:#F5F0D0;
-  
   --card:#fff;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
@@ -297,9 +296,9 @@ main{padding:16px 14px 100px;max-width:480px;margin:0 auto;}
 // ===== DEFAULTS =====
 const DEFAULT_DIRS = {
   receitas: ['Antonio','Gerson','Gonçala','Mariana','Paulo','Cynthia'],
-  atelie: ['Mariana','Simples','Contador','Dare','Darf','Zeramics','Hobby Cerâmica','Pri Spaluto','Terra Nova','Arte Brasil','Farias','Gaia'],
-  casa: ['Luz','Água','Claro','Papel Primo','Paulo Serra'],
-  pessoal: ['Cartão de Crédito','Cabelereiro','Pilates','Fisioterapia','Consultas','Exames']
+  atelie: ['Mariana','Simples','Contador','Dare','Darf','Zeramics','Hobby Cerâmica','Pri Spaluto','Terra Nova','Arte Brasil','Farias','Gaia','Água de Beber'],
+  casa: ['Luz','Água','Claro','Papel Primo','Paulo Serra','Antonio Guarda','Gerson','Gonçala'],
+  pessoal: ['Cartão de Crédito','Cabelereiro','Pilates','Fisioterapia','Consultas','Exames','Compras']
 };
 
 const MESES = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
@@ -377,6 +376,7 @@ function salvarRecBruta(){
   if(el) d['__recbruta'].valor = el.value;
   if(elD) d['__recbruta'].data = elD.value;
   recalcular();
+  autoSalvar();
 }
 
 function renderSecao(elId, dirId, tipo){
@@ -417,6 +417,7 @@ function setEntrada(dirId, nome, valor, data){
   if(valor!==null) d[k].valor=valor;
   if(data!==null) d[k].data=data;
   recalcular();
+  autoSalvar();
 }
 
 function salvarInv(){
@@ -447,6 +448,7 @@ function salvarSaldoInicial(){
   if(!d['__saldoinicial']) d['__saldoinicial']={};
   d['__saldoinicial'].valor = el ? el.value : '';
   recalcular();
+  autoSalvar();
 }
 
 function recalcular(){
@@ -699,6 +701,34 @@ function fecharModalDir(e){
   document.getElementById('modalOverlay').classList.remove('open');
   if(tabAtual==='lancamento') renderLancamento();
 }
+
+// ===== AUTO SAVE =====
+let autoSalvarTimer = null;
+function autoSalvar(){
+  clearTimeout(autoSalvarTimer);
+  autoSalvarTimer = setTimeout(()=>{
+    salvarState();
+    mostrarToast('💾 Salvo automaticamente');
+  }, 800);
+}
+
+function mostrarToast(msg){
+  let toast = document.getElementById('toast');
+  if(!toast){
+    toast = document.createElement('div');
+    toast.id = 'toast';
+    toast.style.cssText = 'position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--escuro);color:var(--creme);padding:10px 20px;border-radius:20px;font-size:13px;z-index:999;opacity:0;transition:opacity .3s;white-space:nowrap;';
+    document.body.appendChild(toast);
+  }
+  toast.textContent = msg;
+  toast.style.opacity = '1';
+  setTimeout(()=>{ toast.style.opacity = '0'; }, 2000);
+}
+
+// Aviso ao sair sem backup
+window.addEventListener('beforeunload', function(){
+  salvarState();
+});
 
 // ===== BACKUP =====
 function exportarBackup(){
